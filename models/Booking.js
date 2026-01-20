@@ -38,7 +38,7 @@ const bookingSchema = new mongoose.Schema(
       validate: {
         validator: function(value) {
           if (!this.check_in_date) return false;
-          const minStay = 30; // 30 days minimum stay
+          const minStay = 30; 
           const minCheckOut = new Date(this.check_in_date);
           minCheckOut.setDate(minCheckOut.getDate() + minStay);
           return value >= minCheckOut;
@@ -64,7 +64,6 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Static method to check for date conflicts
 bookingSchema.statics.checkDateConflict = async function(pgId, checkInDate, checkOutDate, excludeBookingId = null) {
   const query = {
     pg_id: pgId,
@@ -92,12 +91,10 @@ bookingSchema.statics.checkDateConflict = async function(pgId, checkInDate, chec
   return conflictingBookings.length > 0;
 };
 
-// Instance method to check if a date range is available
 bookingSchema.methods.isDateRangeAvailable = async function(startDate, endDate) {
   return !(await this.constructor.checkDateConflict(this.pg_id, startDate, endDate, this._id));
 };
 
-// Static method to get all booked dates for a PG
 bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) {
   const bookings = await this.find({
     pg_id: pgId,
@@ -124,10 +121,8 @@ bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) 
   return bookedDates;
 };
 
-// Pre-save middleware to validate dates
 bookingSchema.pre('save', async function(next) {
   if (this.isNew && this.check_in_date && this.check_out_date) {
-    // Check for date conflicts
     const hasConflict = await this.constructor.checkDateConflict(
       this.pg_id, 
       this.check_in_date, 

@@ -65,7 +65,7 @@ router.get("/", requireAuth, requireOwner, async (req, res) => {
         startingPrice: pg.min_price || pg.max_price || 0,
         tags: [pg.gender || null, pg.food_included ? "Food included" : null].filter(Boolean),
         bookingsCount,
-        viewsCount: 0 // View tracking not implemented yet
+        viewsCount: 0 
       };
     }));
 
@@ -311,15 +311,12 @@ router.get("/payouts", requireAuth, requireOwner, async (req, res) => {
     const totalEarnedVal = paidBookings.reduce((sum, b) => sum + (b.monthly_rent || 0), 0);
     const totalEarned = totalEarnedVal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-    // Mock pending payout logic: bookings in the last 7 days that haven't been "payout requested"
-    // Since we don't have a payout request model yet, we'll just show 0 or some logic
     const pendingPayout = (0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
     const lastPayoutDate = paidBookings.length > 0
       ? new Date(paidBookings[0].createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
       : 'N/A';
 
-    // Calculate monthly average
     let avgMonthlyPayout = '0.00';
     if (paidBookings.length > 0) {
       const firstBooking = paidBookings[paidBookings.length - 1].createdAt;
@@ -334,7 +331,6 @@ router.get("/payouts", requireAuth, requireOwner, async (req, res) => {
       pgs: [{ name: b.pg_name, amount: (b.monthly_rent || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }]
     }));
 
-    // Chart data (last 10 months to match the UI)
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const chartLabels = [];
     const chartValues = [];
@@ -494,7 +490,6 @@ router.delete("/pg/:id/delete", requireAuth, requireOwner, async (req, res) => {
 });
 
 
-// Booking status update routes
 router.post("/bookings/:id/approve", requireAuth, requireOwner, async (req, res) => {
   try {
     const booking = await Booking.findOne({
@@ -513,7 +508,6 @@ router.post("/bookings/:id/approve", requireAuth, requireOwner, async (req, res)
     booking.booking_status = 'confirmed';
     await booking.save();
 
-    // Send notification to tenant (placeholder - implement email/SMS later)
     console.log(`Booking ${booking._id} approved. Tenant: ${booking.tenant_id}`);
 
     res.redirect("/owner/bookings?success=Booking approved successfully");
@@ -541,7 +535,6 @@ router.post("/bookings/:id/reject", requireAuth, requireOwner, async (req, res) 
     booking.booking_status = 'cancelled';
     await booking.save();
 
-    // Send notification to tenant (placeholder - implement email/SMS later)
     console.log(`Booking ${booking._id} rejected. Tenant: ${booking.tenant_id}`);
 
     res.redirect("/owner/bookings?success=Booking rejected successfully");
@@ -601,12 +594,10 @@ router.post("/bookings/:id/checkout", requireAuth, requireOwner, async (req, res
   }
 });
 
-// API endpoint for booking availability data
 router.get("/api/bookings/availability/:pgId", requireAuth, requireOwner, async (req, res) => {
   try {
     const { pgId } = req.params;
 
-    // Verify PG belongs to owner
     const pg = await Pg.findOne({ _id: pgId, owner_id: req.user.userId });
     if (!pg) {
       return res.status(404).json({ success: false, error: "PG not found" });
@@ -622,7 +613,6 @@ router.get("/api/bookings/availability/:pgId", requireAuth, requireOwner, async 
   }
 });
 
-// Manual trigger for booking status updates (admin function)
 router.post("/bookings/update-statuses", requireAuth, requireOwner, async (req, res) => {
   try {
     const AvailabilityService = require("../services/availabilityService");

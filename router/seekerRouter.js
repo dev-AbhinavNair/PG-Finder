@@ -34,7 +34,6 @@ router.post("/pgs/:id/report", requireAuth, seekerController.reportPg);
 router.post("/bookings/:id/create-order", requireAuth, seekerController.createOrder);
 router.post("/bookings/:id/verify-payment", requireAuth, seekerController.verifyPayment);
 
-// API Routes
 router.get("/api/pgs/:id/availability", seekerController.checkPgAvailability);
 
 module.exports = router;

@@ -30,7 +30,6 @@ const getSearchResults = async (req, res) => {
 
         const pgs = await Pg.find(query).sort("-createdAt");
 
-        // Fetch full user object if logged in
         let user = null;
         if (req.user) {
             const User = require("../models/User");
@@ -57,7 +56,6 @@ const getPgDetails = async (req, res) => {
             return res.status(404).render("errors/404", { url: req.originalUrl });
         }
 
-        // Fetch full user object if logged in
         let user = null;
         if (req.user) {
             const User = require("../models/User");
@@ -91,7 +89,6 @@ const renderHome = async (req, res) => {
             "Magarpatta"
         ];
 
-        // Fetch full user object if logged in
         let user = null;
         if (req.user) {
             const User = require("../models/User");
@@ -141,7 +138,6 @@ const postBooking = async (req, res) => {
             return res.status(404).render("errors/404", { url: req.originalUrl });
         }
 
-        // Validate required fields
         if (!check_in_date || !check_out_date || !room_type) {
             return res.render("seeker/book", {
                 pg,
@@ -150,11 +146,9 @@ const postBooking = async (req, res) => {
             });
         }
 
-        // Parse dates
         const checkInDate = new Date(check_in_date);
         const checkOutDate = new Date(check_out_date);
 
-        // Validate date range using availability service
         const AvailabilityService = require("../services/availabilityService");
         const dateValidation = AvailabilityService.validateDateRange(checkInDate, checkOutDate);
 
@@ -166,7 +160,6 @@ const postBooking = async (req, res) => {
             });
         }
 
-        // Check availability
         const isAvailable = await AvailabilityService.isPgAvailable(pgId, checkInDate, checkOutDate);
         if (!isAvailable) {
             return res.render("seeker/book", {
@@ -176,7 +169,6 @@ const postBooking = async (req, res) => {
             });
         }
 
-        // Create booking
         await Booking.create({
             pg_id: pg._id,
             owner_id: pg.owner_id,
@@ -196,7 +188,6 @@ const postBooking = async (req, res) => {
     } catch (err) {
         console.error(err);
         
-        // Handle validation errors
         if (err.name === 'ValidationError') {
             const pg = await Pg.findById(req.params.pgId);
             return res.render("seeker/book", {
@@ -418,7 +409,6 @@ const checkPgAvailability = async (req, res) => {
         const checkInDate = new Date(check_in);
         const checkOutDate = new Date(check_out);
 
-        // Validate date range
         const AvailabilityService = require("../services/availabilityService");
         const dateValidation = AvailabilityService.validateDateRange(checkInDate, checkOutDate);
 
@@ -429,7 +419,6 @@ const checkPgAvailability = async (req, res) => {
             });
         }
 
-        // Check availability
         const isAvailable = await AvailabilityService.isPgAvailable(id, checkInDate, checkOutDate);
 
         res.json({ 
