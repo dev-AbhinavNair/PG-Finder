@@ -1,0 +1,27 @@
+{
+  "name": "first-project",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "update-bookings": "node scripts/update-booking-statuses.js",
+    "test-booking-system": "node scripts/test-booking-system.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cloudinary": "^2.8.0",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.2",
+    "multer": "^2.0.2",
+    "mutter": "^1.0.1",
+    "nodemon": "^3.1.11",
+    "razorpay": "^2.9.6"
+  }
+}

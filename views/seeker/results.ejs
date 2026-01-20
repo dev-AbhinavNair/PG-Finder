@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Results - FindMyPG</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+  <style>
+    body { background:#f5f7fb; }
+    .nav-brand {
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; color:#2563eb; text-decoration:none;
+    }
+    .brand-icon {
+      width: 32px; height: 32px;
+      border-radius: 10px;
+      background:#2563eb;
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:700;
+    }
+
+    .section { padding: 28px 0; }
+    .section-title { font-weight: 800; color:#111827; }
+
+    .pg-card {
+      border: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      background:#fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pg-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+    }
+    .pg-cover {
+      position: relative;
+      height: 180px;
+      background:#d1d5db;
+      overflow:hidden;
+    }
+    .pg-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+    .pg-overlay {
+      position:absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.0));
+    }
+    .pg-cover-text {
+      position:absolute; left: 14px; bottom: 12px; right: 14px;
+      color:#fff;
+    }
+    .pg-name { font-weight: 800; font-size: 1.1rem; }
+    .pg-price { font-weight: 700; font-size: 1rem; }
+
+    .mini-badge {
+      display:inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      border: 1px solid #e5e7eb;
+      background:#f9fafb;
+      color:#111827;
+      margin-right: 6px;
+      margin-top: 8px;
+    }
+
+    .muted { color:#6b7280; }
+    .footer {
+      background:#f3f4f6;
+      border-top: 1px solid #e5e7eb;
+      padding: 32px 0 18px;
+    }
+    .footer a { color:#6b7280; text-decoration:none; }
+    .footer a:hover { color:#111827; text-decoration:underline; }
+
+    .search-strip {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container py-2">
+      <a class="nav-brand" href="/">
+        <span class="brand-icon">🏠</span>
+        <span>FindMyPG</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="topnav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+          <li class="nav-item"><a class="nav-link active" href="/pgs">Browse PGs</a></li>
+
+          <% if (typeof user !== "undefined" && user) { %>
+            <li class="nav-item"><a class="nav-link" href="/profile">Hi, <%= user.name %></a></li>
+            <li class="nav-item">
+              <form action="/logout" method="POST" class="d-inline">
+                <button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button>
+              </form>
+            </li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <% } %>
+          
+          <li class="nav-item">
+            <a class="btn btn-outline-primary btn-sm" href="/register/owner">List your PG</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="search-strip">
+    <div class="container">
+      <form action="/pgs" method="GET" class="d-flex gap-2">
+         <input
+          class="form-control"
+          type="text"
+          name="q"
+          placeholder="Search area, city or landmark..."
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+        />
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <h4 class="section-title mb-1">
+             <% if (searchQuery) { %>
+                Results for "<%= searchQuery %>"
+             <% } else { %>
+                All PGs
+             <% } %>
+          </h4>
+          <div class="muted"><%= pgs.length %> properties found</div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <% if (!pgs || pgs.length === 0) { %>
+          <div class="col-12">
+            <div class="alert alert-light border text-center py-5">
+              <div class="h3 mb-3">😕</div>
+              <h5>No PGs found</h5>
+              <p class="mb-0 text-muted">Try changing your search terms or browse all PGs.</p>
+              <a href="/pgs" class="btn btn-outline-primary mt-3">Clear Search</a>
+            </div>
+          </div>
+        <% } %>
+
+        <% (pgs || []).forEach(pg => { %>
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <a href="/pgs/<%= pg._id %>" class="text-decoration-none">
+              <div class="pg-card h-100">
+                <div class="pg-cover">
+                  <img src="<%= pg.cover_url || pg.coverUrl || 'https://images.unsplash.com/photo-1522770179533-24471fcdba45' %>" alt="<%= pg.name %>">
+                  <div class="pg-overlay"></div>
+                  <div class="pg-cover-text">
+                    <div class="pg-name"><%= pg.name %></div>
+                    <div class="pg-price">Starting from ₹<%= pg.min_price || pg.startingPrice || 'N/A' %>/mo</div>
+                  </div>
+                </div>
+
+                <div class="p-3">
+                  <div class="muted" style="font-size:.9rem;">
+                    <i class="bi bi-geo-alt-fill me-1"></i><%= pg.area %><% if (pg.city) { %>, <%= pg.city %><% } %>
+                  </div>
+
+                  <div class="mt-2 d-flex flex-wrap gap-1">
+                     <span class="mini-badge">
+                        <%= pg.gender === 'boys' ? 'Boys' : pg.gender === 'girls' ? 'Girls' : 'Co-ed' %>
+                     </span>
+                     <% if (pg.food_included) { %>
+                       <span class="mini-badge">Food Included</span>
+                     <% } %>
+                  </div>
+
+                  <div class="mt-2">
+                    <% (pg.amenities || []).slice(0, 3).forEach(am => { %>
+                      <span class="mini-badge text-truncate" style="max-width: 100px;"><%= am %></span>
+                    <% }) %>
+                    <% if ((pg.amenities || []).length > 3) { %>
+                      <span class="mini-badge">+<%= pg.amenities.length - 3 %></span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer mt-auto">
+    <div class="container">
+      <div class="text-center muted" style="font-size:.9rem;">
+        © <%= new Date().getFullYear() %> FindMyPG. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

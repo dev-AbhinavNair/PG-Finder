@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindMyPG Owner - Payouts</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+  <style>
+    body {
+      background: #f5f7fb;
+    }
+
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .brand-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #0ea5a4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .sidebar {
+      background: #f3f4f6;
+      border-right: 1px solid #e5e7eb;
+      min-height: calc(100vh - 56px);
+      padding: 14px 10px;
+    }
+
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #374151;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    .side-link:hover {
+      background: #e9eefb;
+    }
+
+    .side-link.active {
+      background: #e9eefb;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .side-ic {
+      width: 18px;
+      height: 18px;
+      opacity: 0.75;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content-wrap {
+      padding: 18px 18px 28px;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #111827;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 6px;
+    }
+
+    .stat-helper {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #111827;
+      margin-bottom: 14px;
+      margin-top: 24px;
+    }
+
+    .btn-teal {
+      background: #0ea5a4;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-teal:hover {
+      background: #0d9a94;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #f9fafb;
+    }
+
+    .chart-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      margin-top: 14px;
+    }
+
+    .chart-title {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+
+    .transaction-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    .transaction-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .transaction-date {
+      font-weight: 500;
+      color: #111827;
+      font-size: 0.9rem;
+    }
+
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-processed {
+      background: #d1f4e0;
+      color: #047857;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .badge-failed {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .transaction-amount {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #111827;
+      margin-top: 8px;
+    }
+
+    .transaction-breakdown {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .footer {
+      color: #9ca3af;
+      font-size: 0.85rem;
+      padding: 18px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar topbar navbar-expand-lg px-3" style="height: 56px">
+    <div class="d-flex align-items-center gap-2">
+      <div class="brand-dot">🏠</div>
+      <span class="fw-semibold" style="color: #0f766e">FindMyPG Owner</span>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <% if (typeof owner !=="undefined" && owner) { %>
+        <span class="small text-secondary d-none d-md-inline">Hi, <%= owner.name %></span>
+        <% } %>
+
+          <div class="rounded-circle bg-light border" style="width: 34px; height: 34px; overflow: hidden">
+            <% if (typeof owner !=="undefined" && owner && owner.avatar_url) { %>
+              <img src="<%= owner.avatar_url %>" alt="avatar" style="width: 100%; height: 100%; object-fit: cover" />
+              <% } %>
+          </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <aside class="col-12 col-md-3 col-lg-2 sidebar">
+        <a class="side-link" href="/owner">
+          <span class="side-ic">▦</span> My PGs
+        </a>
+        <a class="side-link" href="/owner/pg/new">
+          <span class="side-ic">＋</span> Add New PG
+        </a>
+        <a class="side-link" href="/owner/bookings">
+          <span class="side-ic">🗓</span> Bookings
+        </a>
+        <a class="side-link" href="/owner/messages">
+          <span class="side-ic">💬</span> Messages
+        </a>
+        <a class="side-link active" href="/owner/payouts">
+          <span class="side-ic">₹</span> Payouts
+        </a>
+        <a class="side-link" href="/owner/settings">
+          <span class="side-ic"><i class="bi bi-gear"></i></span> Settings
+        </a>
+
+        <form action="/logout" method="POST" class="mt-3 px-2">
+          <button class="btn btn-outline-secondary w-100 btn-sm" type="submit">
+            Logout
+          </button>
+        </form>
+      </aside>
+
+      <main class="col-12 col-md-9 col-lg-10 content-wrap">
+        <div class="page-title mb-4">Payouts Overview</div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-label">Total Earned</div>
+              <div class="stat-value">₹<%= totalEarned || '45,678.90' %>
+              </div>
+              <div class="stat-helper">All time earnings</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-label">Pending Payout</div>
+              <div class="stat-value">
+                ₹<%= pendingPayout || '1,234.56' %>
+              </div>
+              <div class="stat-helper">Next payout on Nov 15, 2023</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-label">Last Payout Date</div>
+              <div class="stat-value" style="font-size: 1.2rem">
+                <%= lastPayoutDate || 'Oct 26, 2023' %>
+              </div>
+              <div class="stat-helper">Amount: ₹3,450.00</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-label">Avg. Monthly Payout</div>
+              <div class="stat-value">
+                ₹<%= avgMonthlyPayout || '3,806.57' %>
+              </div>
+              <div class="stat-helper">Based on last 12 months</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-lg-6">
+            <div class="section-title">Manage Payouts</div>
+            <form action="/owner/payouts/request" method="POST" style="width: 100%; margin-bottom: 10px">
+              <button type="submit" class="btn-teal" style="width: 100%">
+                Request Payout
+              </button>
+            </form>
+            <a href="/owner/payouts/settings" class="btn-secondary"
+              style="width: 100%; display: block; text-align: center"> Payout Settings</a>
+          </div>
+
+          <div class="col-12 col-lg-6">
+            <div class="section-title">Earnings Trend</div>
+            <div class="chart-container" style="height:260px">
+              <canvas id="earningsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label style="font-size: 0.9rem; color: #6b7280">Filter by Date:</label>
+          <input type="date" value="2025-12-13" style="
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                padding: 8px 12px;
+                margin-left: 10px;
+              " />
+        </div>
+
+        <div class="section-title">Payout Transactions</div>
+        <div>
+          <% if (!transactions || transactions.length===0) { %>
+            <div class="alert alert-light border">No transactions found.</div>
+            <% } else { %>
+              <% transactions.forEach(txn=> { %>
+                <div class="transaction-card">
+                  <div class="transaction-header">
+                    <div class="transaction-date">
+                      <%= txn.date %>
+                    </div>
+                    <span class="badge-status badge-<%= txn.status.toLowerCase() %>">
+                      <%= txn.status.charAt(0).toUpperCase() + txn.status.slice(1) %>
+                    </span>
+                  </div>
+                  <div class="transaction-amount">₹<%= txn.amount %>
+                  </div>
+                  <div class="transaction-breakdown">
+                    <% (txn.pgs || []).forEach(pg=> { %>
+                      <div class="breakdown-row">
+                        <span>
+                          <%= pg.name %>
+                        </span>
+                        <span>₹<%= pg.amount %></span>
+                      </div>
+                      <% }) %>
+                  </div>
+                </div>
+                <% }) %>
+                  <% } %>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="footer text-center">
+    © <%= new Date().getFullYear() %> FindMyPG Owner. All rights reserved.
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script>
+    const ctx = document.getElementById("earningsChart");
+    if (ctx) {
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: <%- JSON.stringify(chartLabels) %>,
+          datasets: [
+            {
+              label: "Earnings",
+              data: <%- JSON.stringify(chartValues) %>,
+              borderColor: "#0ea5a4",
+              backgroundColor: "rgba(14, 165, 164, 0.1)",
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: (v) => "₹" + v } },
+          },
+        },
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindMyPG Owner - Settings</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+  <style>
+    body { background: #f5f7fb; }
+    .topbar { background: #ffffff; border-bottom: 1px solid #e5e7eb; }
+    .brand-dot { width: 28px; height: 28px; border-radius: 8px; background: #0ea5a4; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
+    .sidebar { background: #f3f4f6; border-right: 1px solid #e5e7eb; min-height: calc(100vh - 56px); padding: 14px 10px; }
+    .side-link { display: flex; align-items: center; gap: 10px; color: #374151; text-decoration: none; padding: 10px 12px; border-radius: 10px; font-size: .95rem; }
+    .side-link:hover { background: #e9eefb; }
+    .side-link.active { background: #e9eefb; color: #111827; font-weight: 600; }
+    .side-ic { width: 18px; height: 18px; opacity: .75; display: inline-flex; align-items: center; justify-content: center; }
+    .content-wrap { padding: 18px 18px 28px; }
+    .page-title { font-weight: 700; font-size: 1.4rem; color: #111827; }
+    .section-card { background: #fff; border-radius: 12px; padding: 22px; border: 1px solid #e5e7eb; margin-bottom: 18px; }
+    .section-title { font-weight: 600; font-size: 1.05rem; color: #111827; margin-bottom: 16px; }
+    .section-desc { color: #6b7280; font-size: .9rem; margin-bottom: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; color: #374151; font-weight: 500; font-size: .9rem; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem; color: #111827; }
+    .form-control:focus { outline: none; border-color: #0ea5a4; box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.1); }
+    .toggle-switch { width: 48px; height: 28px; background: #d1d5db; border-radius: 999px; position: relative; cursor: pointer; transition: background .3s; display: inline-block; }
+    .toggle-switch.on { background: #0ea5a4; }
+    .toggle-switch .indicator { width: 24px; height: 24px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left .3s; }
+    .toggle-switch.on .indicator { left: 22px; }
+    .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: #d1d5db; object-fit: cover; display: inline-block; }
+    .btn-primary-teal { background: #0ea5a4; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 500; cursor: pointer; }
+    .btn-primary-teal:hover { background: #0d9a94; }
+    .btn-secondary { background: #fff; border: 1px solid #d1d5db; color: #374151; border-radius: 8px; padding: 10px 20px; font-weight: 500; cursor: pointer; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-danger { background: #dc2626; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 500; cursor: pointer; }
+    .btn-danger:hover { background: #b91c1c; }
+    .badge-verified { background: #d1f4e0; color: #047857; padding: 4px 8px; border-radius: 6px; font-size: .8rem; font-weight: 500; }
+    .text-muted { color: #6b7280; }
+    .help-text { color: #9ca3af; font-size: .85rem; margin-top: 4px; }
+    .footer { color: #9ca3af; font-size: .85rem; padding: 18px; border-top: 1px solid #e5e7eb; background: #fff; }
+    textarea { resize: vertical; min-height: 100px; }
+    .hidden-file-input { display: none; }
+    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+    .alert-success { background: #d1f4e0; color: #047857; border: 1px solid #6ee7b7; }
+    .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar topbar navbar-expand-lg px-3" style="height:56px;">
+    <div class="d-flex align-items-center gap-2">
+      <div class="brand-dot">🏠</div>
+      <span class="fw-semibold" style="color:#0f766e;">FindMyPG Owner</span>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <% if (typeof owner !=="undefined" && owner) { %>
+        <span class="small text-secondary d-none d-md-inline">Hi, <%= owner.name %></span>
+      <% } %>
+
+      <div class="rounded-circle bg-light border" style="width:34px;height:34px; overflow:hidden;">
+        <% if (typeof owner !=="undefined" && owner && owner.avatar_url) { %>
+          <img src="<%= owner.avatar_url %>" alt="avatar" style="width:100%;height:100%;object-fit:cover;">
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <aside class="col-12 col-md-3 col-lg-2 sidebar">
+        <a class="side-link" href="/owner">
+          <span class="side-ic">▦</span> My PGs
+        </a>
+        <a class="side-link" href="/owner/pg/new">
+          <span class="side-ic">＋</span> Add New PG
+        </a>
+        <a class="side-link" href="/owner/bookings">
+          <span class="side-ic">🗓</span> Bookings
+        </a>
+        <a class="side-link" href="/owner/messages">
+          <span class="side-ic">💬</span> Messages
+        </a>
+        <a class="side-link" href="/owner/payouts">
+          <span class="side-ic">₹</span> Payouts
+        </a>
+        <a class="side-link active" href="/owner/settings">
+          <span class="side-ic"><i class="bi bi-gear"></i></span> Settings
+        </a>
+
+        <form action="/logout" method="POST" class="mt-3 px-2">
+          <button class="btn btn-outline-secondary w-100 btn-sm" type="submit">Logout</button>
+        </form>
+      </aside>
+
+      
+      <main class="col-12 col-md-9 col-lg-10 content-wrap">
+        <div class="page-title mb-4">Owner Settings</div>
+
+        
+        <% if (typeof success !== 'undefined' && success) { %>
+          <div class="alert alert-success"><%= success %></div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <form method="POST" action="/owner/settings" enctype="multipart/form-data">
+      
+          <div class="section-card">
+            <div class="section-title">Account & Profile Settings</div>
+            
+            <div class="form-group">
+              <label style="font-weight: 500; margin-bottom: 10px;">Profile Picture</label>
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <img src="<%= owner && owner.avatar_url ? owner.avatar_url : 'https://via.placeholder.com/80' %>" alt="profile" class="profile-pic" id="previewImg">
+                <div>
+                  <button type="button" class="btn-secondary" onclick="document.getElementById('avatarInput').click()">📷 Update Profile Picture</button>
+                  <input type="file" id="avatarInput" name="avatar" accept="image/*" class="hidden-file-input" onchange="previewImage(event)">
+                  <div class="help-text">JPG, PNG or GIF (Max 5MB)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" value="<%= owner && owner.name ? owner.name : 'John Doe' %>" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" value="<%= owner && owner.email ? owner.email : 'john.doe@example.com' %>" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" name="phone" value="<%= owner && owner.phone ? owner.phone : '+91 98765-43210' %>" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" name="address" value="<%= owner && owner.address ? owner.address : '123 PG Lane, Bangalore, India' %>" />
+            </div>
+          </div>
+
+          
+
+          <div class="section-card">
+            <div class="section-title">Listing Preferences</div>
+
+            <div class="form-group">
+              <label class="form-label">Default Booking Window</label>
+              <select class="form-control" name="booking_window">
+                <option>3 Months</option>
+                <option>6 Months</option>
+                <option>12 Months</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+              <label class="form-label m-0">Auto-accept Bookings</label>
+              <div class="toggle-switch" onclick="this.classList.toggle('on')">
+                <div class="indicator"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Default Welcome Message</label>
+              <textarea class="form-control" name="welcome_message">Hello! Welcome to our PG. Feel free to reach out if you have any questions during your stay.</textarea>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Payment & Payouts</div>
+            <p class="section-desc">Manage your bank details, payout schedules, and preferences for receiving payments from your PG listings.</p>
+            <a href="/owner/payouts" class="btn-secondary"> Manage Payout Settings</a>
+          </div>
+
+        
+          <div style="display: flex; gap: 12px; margin-top: 24px; margin-bottom: 40px;">
+            <button type="submit" class="btn-primary-teal"> Save Changes</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <div class="footer text-center">
+    © <%= new Date().getFullYear() %> FindMyPG Owner. All rights reserved.
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('previewImg').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+</body>
+
+</html>

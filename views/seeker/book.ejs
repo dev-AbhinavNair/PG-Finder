@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book <%= pg.name %> - FindMyPG</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .card-summary {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .summary-cover {
+            height: 140px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .card-form {
+            background: #fff;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .booking-title {
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 12px;
+            border-color: #d1d5db;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            border-color: #2563eb;
+        }
+
+        .muted {
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+        <div class="container py-2">
+            <a class="nav-brand" href="/">
+                <span class="brand-icon">🏠</span>
+                <span>FindMyPG</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <div class="row justify-content-center g-4">
+            <div class="col-lg-4 order-lg-2">
+                <div class="card-summary">
+                    <img src="<%= pg.cover_url || 'https://images.unsplash.com/photo-1522770179533-24471fcdba45' %>"
+                        class="summary-cover" alt="Cover">
+                    <div class="p-3">
+                        <h5 class="fw-bold mb-1">
+                            <%= pg.name %>
+                        </h5>
+                        <div class="muted small mb-3">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <%= pg.address_line %>, <%= pg.area %>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div class="small fw-semibold text-muted">Monthly Rent</div>
+                            <div class="fw-bold text-primary">₹<%= pg.min_price %>/mo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 order-lg-1">
+                <div class="card-form">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <a href="/pgs/<%= pg._id %>" class="btn btn-light btn-sm rounded-circle"
+                            style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;"><i
+                                class="bi bi-arrow-left"></i></a>
+                        <h2 class="booking-title mb-0">Complete your booking</h2>
+                    </div>
+
+                    <% if (error) { %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                        <% } %>
+
+                            <form action="/book/<%= pg._id %>" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name"
+                                        value="<%= user && user.name ? user.name : '' %>" required>
+                                    <div class="form-text">Booking will be made under this name.</div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Move-in Date</label>
+                                        <input type="date" class="form-control" name="check_in_date" id="checkInDate" required
+                                            min="<%= new Date().toISOString().split('T')[0] %>">
+                                        <div class="form-text">Select your move-in date</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Move-out Date</label>
+                                        <input type="date" class="form-control" name="check_out_date" id="checkOutDate" required>
+                                        <div class="form-text">Minimum 30 days stay required</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Room Type</label>
+                                    <select class="form-select" name="room_type" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="single">Single Private Room</option>
+                                        <option value="double">Double Sharing</option>
+                                        <option value="triple">Triple Sharing</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3" id="availabilityInfo" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <span id="availabilityMessage">Checking availability...</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Any special requests?</label>
+                                    <textarea class="form-control" name="tenant_notes" rows="3"
+                                        placeholder="E.g. late check-in, ground floor preference..."></textarea>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">Confirm Booking
+                                        Request</button>
+                                </div>
+
+                                <div class="text-center mt-3 text-muted small">
+                                    You won't be charged yet. The owner will review your request.
+                                </div>
+                            </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkInDate = document.getElementById('checkInDate');
+    const checkOutDate = document.getElementById('checkOutDate');
+    const availabilityInfo = document.getElementById('availabilityInfo');
+    const availabilityMessage = document.getElementById('availabilityMessage');
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Set minimum check-out date when check-in date changes
+    checkInDate.addEventListener('change', function() {
+        const checkIn = new Date(this.value);
+        const minCheckOut = new Date(checkIn);
+        minCheckOut.setDate(minCheckOut.getDate() + 30);
+        
+        checkOutDate.min = minCheckOut.toISOString().split('T')[0];
+        checkOutDate.disabled = false;
+        
+        // Clear check-out date if it's before the new minimum
+        if (checkOutDate.value && new Date(checkOutDate.value) < minCheckOut) {
+            checkOutDate.value = '';
+        }
+        
+        checkAvailability();
+    });
+
+    // Check availability when check-out date changes
+    checkOutDate.addEventListener('change', checkAvailability);
+
+    function checkAvailability() {
+        if (!checkInDate.value || !checkOutDate.value) {
+            availabilityInfo.style.display = 'none';
+            return;
+        }
+
+        const checkIn = new Date(checkInDate.value);
+        const checkOut = new Date(checkOutDate.value);
+        
+        // Validate minimum stay
+        const minCheckOut = new Date(checkIn);
+        minCheckOut.setDate(minCheckOut.getDate() + 30);
+        
+        if (checkOut < minCheckOut) {
+            showAvailabilityError('Minimum stay of 30 days required');
+            return;
+        }
+
+        // Show loading state
+        availabilityInfo.style.display = 'block';
+        availabilityMessage.textContent = 'Checking availability...';
+        availabilityInfo.className = 'mb-3';
+        availabilityInfo.querySelector('.alert').className = 'alert alert-info';
+
+        // Check availability via API
+        fetch(`/api/pgs/${document.querySelector('form').action.split('/')[4]}/availability?check_in=${checkInDate.value}&check_out=${checkOutDate.value}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.available) {
+                    showAvailabilitySuccess('PG is available for selected dates');
+                    submitBtn.disabled = false;
+                } else {
+                    showAvailabilityError('PG is not available for selected dates. Please choose different dates.');
+                    submitBtn.disabled = true;
+                }
+            })
+            .catch(error => {
+                console.error('Error checking availability:', error);
+                showAvailabilityError('Unable to check availability. Please try again.');
+                submitBtn.disabled = false;
+            });
+    }
+
+    function showAvailabilitySuccess(message) {
+        availabilityInfo.style.display = 'block';
+        availabilityMessage.textContent = message;
+        availabilityInfo.className = 'mb-3';
+        availabilityInfo.querySelector('.alert').className = 'alert alert-success';
+    }
+
+    function showAvailabilityError(message) {
+        availabilityInfo.style.display = 'block';
+        availabilityMessage.textContent = message;
+        availabilityInfo.className = 'mb-3';
+        availabilityInfo.querySelector('.alert').className = 'alert alert-danger';
+    }
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        if (!checkInDate.value || !checkOutDate.value) {
+            e.preventDefault();
+            showAvailabilityError('Please select both check-in and check-out dates');
+            return;
+        }
+
+        const checkIn = new Date(checkInDate.value);
+        const checkOut = new Date(checkOutDate.value);
+        
+        if (checkOut <= checkIn) {
+            e.preventDefault();
+            showAvailabilityError('Check-out date must be after check-in date');
+            return;
+        }
+
+        const minCheckOut = new Date(checkIn);
+        minCheckOut.setDate(minCheckOut.getDate() + 30);
+        
+        if (checkOut < minCheckOut) {
+            e.preventDefault();
+            showAvailabilityError('Minimum stay of 30 days required');
+            return;
+        }
+    });
+
+    // Initialize
+    checkOutDate.disabled = true;
+});
+</script>
+</body>
+
+</html>
