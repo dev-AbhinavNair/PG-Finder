@@ -1,6 +1,7 @@
 const Otp = require("../models/Otp");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const twilioService = require("../services/twilioService");
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -34,6 +35,12 @@ exports.postRegisterUser = async (req, res) => {
     await Otp.create({ phone, code, expiresAt, used: false });
 
     console.log(`OTP for ${phone}: ${code}`);
+
+    try {
+      await twilioService.sendOtp(phone, code);
+    } catch (twilioErr) {
+      console.error("Failed to send WhatsApp OTP:", twilioErr);
+    }
 
     return res.render("otp/verify-otp", {
       phone,
@@ -80,6 +87,12 @@ exports.postRegisterOwner = async (req, res) => {
 
     console.log(`OTP for ${phone}: ${code}`);
 
+    try {
+      await twilioService.sendOtp(phone, code);
+    } catch (twilioErr) {
+      console.error("Failed to send WhatsApp OTP:", twilioErr);
+    }
+
     return res.render("otp/verify-otp", {
       phone,
       purpose: "register",
@@ -116,6 +129,12 @@ exports.postLogin = async (req, res) => {
 
     console.log(`OTP for ${phone}: ${code}`);
 
+    try {
+      await twilioService.sendOtp(phone, code);
+    } catch (twilioErr) {
+      console.error("Failed to send WhatsApp OTP:", twilioErr);
+    }
+
     return res.render("otp/verify-otp", {
       phone,
       error: null,
@@ -145,7 +164,7 @@ exports.postVerifyOtp = async (req, res) => {
     const record = await Otp.findOne({ phone, used: false }).sort({
       createdAt: -1,
     });
-    
+
     if (!record) {
       return res.render("otp/verify-otp", {
         phone,
