@@ -5,8 +5,8 @@ function requireAuth(req, res, next) {
   try {
     jwt.verify(req.cookies.token, process.env.JWT_SECRET);
     return next();
-  } 
-  
+  }
+
   catch (err) {
 
     res.clearCookie("token");

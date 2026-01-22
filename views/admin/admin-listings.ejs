@@ -1,507 +1,567 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FindMyPG Admin - Listings</title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindMyPG Admin - Listings</title>
 
-    <style>
-      body {
-        background: #f5f7fb;
-      }
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-      .topbar {
-        background: #ffffff;
-        border-bottom: 1px solid #e5e7eb;
-        height: 56px;
-      }
-      .brand-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 700;
-        color: #2563eb;
-        text-decoration: none;
-      }
-      .brand-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
-        background: #2563eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-weight: 700;
-      }
+  <style>
+    body {
+      background: #f5f7fb;
+    }
 
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      height: 56px;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .sidebar {
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
+      min-height: calc(100vh - 56px);
+      padding: 14px 0;
+    }
+
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      color: #4b5563;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .side-link:hover {
+      background: #e5edff;
+    }
+
+    .side-link.active {
+      background: #e5edff;
+      color: #111827;
+      border-left: 3px solid #2563eb;
+      padding-left: 15px;
+      font-weight: 600;
+    }
+
+    .content-wrap {
+      padding: 18px 22px 32px;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: #111827;
+    }
+
+    .stat-card {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 12px 16px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    .filter-chip {
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+
+    .table-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+    }
+
+    .avatar-sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .badge-soft {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    .badge-status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-status-approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-status-rejected {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .footer {
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      padding: 16px 24px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 991.98px) {
       .sidebar {
-        background: #f9fafb;
-        border-right: 1px solid #e5e7eb;
-        min-height: calc(100vh - 56px);
-        padding: 14px 0;
-      }
-      .side-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 9px 18px;
-        color: #4b5563;
-        text-decoration: none;
-        font-size: 0.95rem;
-      }
-      .side-link:hover {
-        background: #e5edff;
-      }
-      .side-link.active {
-        background: #e5edff;
-        color: #111827;
-        border-left: 3px solid #2563eb;
-        padding-left: 15px;
-        font-weight: 600;
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        z-index: 1040;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
       }
 
-      .content-wrap {
-        padding: 18px 22px 32px;
+      .sidebar.show {
+        transform: translateX(0);
       }
 
-      .page-title {
-        font-weight: 700;
-        font-size: 1.35rem;
-        color: #111827;
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1030;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
       }
 
-      .stat-card {
-        border-radius: 14px;
-        border: 1px solid #e5e7eb;
-        background: #ffffff;
-        padding: 12px 16px;
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
       }
-      .stat-label {
-        font-size: 0.8rem;
-        color: #6b7280;
-      }
-      .stat-value {
-        font-weight: 700;
-        font-size: 1.3rem;
-      }
+    }
+  </style>
+</head>
 
-      .filter-chip {
-        border-radius: 999px;
-        padding: 8px 12px;
-        font-size: 0.85rem;
-      }
-
-      .table-card {
-        background: #ffffff;
-        border-radius: 14px;
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-      }
-
-      .avatar-sm {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        object-fit: cover;
-      }
-
-      .badge-soft {
-        border-radius: 999px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-      }
-
-      .badge-status-pending {
-        background: #fef3c7;
-        color: #92400e;
-      }
-      .badge-status-approved {
-        background: #dcfce7;
-        color: #166534;
-      }
-      .badge-status-rejected {
-        background: #fee2e2;
-        color: #b91c1c;
-      }
-
-      .footer {
-        background: #ffffff;
-        border-top: 1px solid #e5e7eb;
-        padding: 16px 24px;
-        font-size: 0.85rem;
-        color: #9ca3af;
-      }
-    </style>
-  </head>
-
-  <body>
-    <nav class="navbar topbar px-3">
-      <div class="container-fluid">
+<body>
+  <nav class="navbar topbar px-3">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
+          <i class="bi bi-list"></i>
+        </button>
         <a class="brand-link" href="">
           <div class="brand-icon">A</div>
           <span>FindMyPG Admin</span>
         </a>
-
-        <div class="ms-auto d-flex align-items-center gap-3">
-          <span class="small text-secondary d-none d-md-inline">
-            <% if (admin && admin.name) { %> <%= admin.name %> <% } else { %>
-            Admin <% } %>
-          </span>
-          <div
-            class="rounded-circle bg-light border"
-            style="width: 32px; height: 32px; overflow: hidden"
-          >
-            <% if (admin && admin.avatar_url) { %>
-            <img
-              src="<%= admin.avatar_url %>"
-              style="width: 100%; height: 100%; object-fit: cover"
-              alt="avatar"
-            />
+      </div>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <span class="small text-secondary d-none d-md-inline">
+          <% if (admin && admin.name) { %>
+            <%= admin.name %>
+              <% } else { %>
+                Admin <% } %>
+        </span>
+        <div class="rounded-circle bg-light border" style="width: 32px; height: 32px; overflow: hidden">
+          <% if (admin && admin.avatar_url) { %>
+            <img src="<%= admin.avatar_url %>" style="width: 100%; height: 100%; object-fit: cover" alt="avatar" />
             <% } %>
-          </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <div class="container-fluid">
-      <div class="row g-0">
-        <aside class="col-12 col-md-3 col-lg-2 sidebar">
-          <a href="/admin/listings" class="side-link active">
-            <span><i class="bi bi-list-ul"></i></span> Listings
-          </a>
-          <a href="/admin/reports" class="side-link">
-            <span><i class="bi bi-exclamation-triangle"></i></span> Reports
-          </a>
-          <a href="/admin/settings" class="side-link">
-            <span><i class="bi bi-gear"></i></span> Settings
-          </a>
+  <div class="container-fluid">
+    <div class="row g-0">
+      <aside class="col-12 col-md-3 col-lg-2 sidebar">
+        <a href="/admin/listings" class="side-link active">
+          <span><i class="bi bi-list-ul"></i></span> Listings
+        </a>
+        <a href="/admin/reports" class="side-link">
+          <span><i class="bi bi-exclamation-triangle"></i></span> Reports
+        </a>
+        <a href="/admin/settings" class="side-link">
+          <span><i class="bi bi-gear"></i></span> Settings
+        </a>
 
-          <form action="/logout" method="POST" class="mt-3 px-3">
-            <button
-              class="btn btn-outline-secondary btn-sm w-100"
-              type="submit"
-            >
-              Logout
-            </button>
-          </form>
-        </aside>
+        <form action="/logout" method="POST" class="mt-3 px-3">
+          <button class="btn btn-outline-secondary btn-sm w-100" type="submit">
+            Logout
+          </button>
+        </form>
+      </aside>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <main class="col-12 col-md-9 col-lg-10 content-wrap">
-          <h4 class="page-title mb-3">Listings Moderation Dashboard</h4>
+      <main class="col-12 col-md-9 col-lg-10 content-wrap">
+        <h4 class="page-title mb-3">Listings Moderation Dashboard</h4>
 
-          <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-              <div class="stat-card">
-                <div class="stat-label">Pending Listings</div>
-                <div class="stat-value"><%= stats ? stats.pending : 0 %></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card">
-                <div class="stat-label">Listing Today</div>
-                <div class="stat-value"><%= stats ? stats.today : 0 %></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card">
-                <div class="stat-label">Reported Issues</div>
-                <div class="stat-value"><%= stats ? stats.issues : 0 %></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card">
-                <div class="stat-label">Total Approved</div>
-                <div class="stat-value">
-                  <%= stats ? stats.totalApproved : 0 %>
-                </div>
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">Pending Listings</div>
+              <div class="stat-value">
+                <%= stats ? stats.pending : 0 %>
               </div>
             </div>
           </div>
-
-          <div class="row g-2 align-items-center mb-3">
-            <div class="col-12 col-lg-4">
-              <div class="input-group">
-                <span class="input-group-text bg-white border-end-0"
-                  ><i class="bi bi-search"></i
-                ></span>
-                <input
-                  type="text"
-                  class="form-control border-start-0"
-                  placeholder="Search listings..."
-                  name="q"
-                  value="<%= q || '' %>"
-                />
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">Listing Today</div>
+              <div class="stat-value">
+                <%= stats ? stats.today : 0 %>
               </div>
             </div>
-            <div
-              class="col-12 col-lg-8 d-flex flex-wrap gap-2 justify-content-lg-end mt-2 mt-lg-0"
-            >
-              <button
-                class="btn btn-outline-secondary filter-chip"
-                type="button"
-              >
-                Filter by City
-              </button>
-              <button
-                class="btn btn-outline-secondary filter-chip"
-                type="button"
-              >
-                Filter by Status
-              </button>
-              <button
-                class="btn btn-outline-secondary filter-chip"
-                type="button"
-              >
-                Date Range
-              </button>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">Reported Issues</div>
+              <div class="stat-value">
+                <%= stats ? stats.issues : 0 %>
+              </div>
             </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">Total Approved</div>
+              <div class="stat-value">
+                <%= stats ? stats.totalApproved : 0 %>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <% const cs = (currentStatus || "pending"); %>
+        <div class="row g-2 align-items-center mb-3">
+          <div class="col-12 col-lg-4">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-start-0" placeholder="Search listings..." name="q"
+                value="<%= q || '' %>" />
+            </div>
+          </div>
+          <div class="col-12 col-lg-8 d-flex flex-wrap gap-2 justify-content-lg-end mt-2 mt-lg-0">
+            <button class="btn btn-outline-secondary filter-chip" type="button">
+              Filter by City
+            </button>
+            <button class="btn btn-outline-secondary filter-chip" type="button">
+              Filter by Status
+            </button>
+            <button class="btn btn-outline-secondary filter-chip" type="button">
+              Date Range
+            </button>
+          </div>
+
+          <% const cs=(currentStatus || "pending" ); %>
 
             <div class="d-flex flex-wrap gap-2 mb-3">
 
-              <a
-                class="btn btn-sm <%= cs==='all' ? 'btn-primary' : 'btn-outline-primary' %>"
-                href="/admin/listings?status=all&q=<%= encodeURIComponent(q || '') %>"
-                >All</a
-              >
+              <a class="btn btn-sm <%= cs==='all' ? 'btn-primary' : 'btn-outline-primary' %>"
+                href="/admin/listings?status=all&q=<%= encodeURIComponent(q || '') %>">All</a>
 
-              <a
-                class="btn btn-sm <%= cs==='pending' ? 'btn-primary' : 'btn-outline-primary' %>"
-                href="/admin/listings?status=pending&q=<%= encodeURIComponent(q || '') %>"
-                >Pending</a
-              >
+              <a class="btn btn-sm <%= cs==='pending' ? 'btn-primary' : 'btn-outline-primary' %>"
+                href="/admin/listings?status=pending&q=<%= encodeURIComponent(q || '') %>">Pending</a>
 
-              <a
-                class="btn btn-sm <%= cs==='approved' ? 'btn-primary' : 'btn-outline-primary' %>"
-                href="/admin/listings?status=approved&q=<%= encodeURIComponent(q || '') %>"
-                >Approved</a
-              >
+              <a class="btn btn-sm <%= cs==='approved' ? 'btn-primary' : 'btn-outline-primary' %>"
+                href="/admin/listings?status=approved&q=<%= encodeURIComponent(q || '') %>">Approved</a>
 
-              <a
-                class="btn btn-sm <%= cs==='rejected' ? 'btn-primary' : 'btn-outline-primary' %>"
-                href="/admin/listings?status=rejected&q=<%= encodeURIComponent(q || '') %>"
-                >Rejected</a
-              >
-              
+              <a class="btn btn-sm <%= cs==='rejected' ? 'btn-primary' : 'btn-outline-primary' %>"
+                href="/admin/listings?status=rejected&q=<%= encodeURIComponent(q || '') %>">Rejected</a>
+
+            </div>
+        </div>
+
+        <div class="table-card">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom small text-muted">
+            <span id="selectionCount">
+              <%= (selectedCount || 0) %> items selected
+            </span>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-success btn-sm" type="button">
+                Bulk Approve
+              </button>
+              <button class="btn btn-outline-danger btn-sm" type="button">
+                Bulk Reject
+              </button>
             </div>
           </div>
 
-          <div class="table-card">
-            <div
-              class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom small text-muted"
-            >
-              <span><%= (selectedCount || 0) %> items selected</span>
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-success btn-sm" type="button">
-                  Bulk Approve
-                </button>
-                <button class="btn btn-outline-danger btn-sm" type="button">
-                  Bulk Reject
-                </button>
-              </div>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width: 32px"><input type="checkbox" /></th>
-                    <th>PG Name</th>
-                    <th>Owner</th>
-                    <th>Area</th>
-                    <th>Submitted</th>
-                    <th>Tags</th>
-                    <th>Status</th>
-                    <th class="text-end">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (!listings || listings.length === 0) { %>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 32px"><input type="checkbox" id="selectAll" /></th>
+                  <th>PG Name</th>
+                  <th>Owner</th>
+                  <th>Area</th>
+                  <th>Submitted</th>
+                  <th>Tags</th>
+                  <th>Status</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!listings || listings.length===0) { %>
                   <tr>
                     <td colspan="8" class="text-center text-muted py-4">
                       No listings to moderate.
                     </td>
                   </tr>
-                  <% } %> <% (listings || []).forEach(l => { %>
-                  <tr>
-                    <td>
-                      <input
-                        type="checkbox"
-                        name="selectListing"
-                        value="<%= l._id %>"
-                      />
-                    </td>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <% if (l.coverUrl) { %>
-                        <img
-                          src="<%= l.coverUrl %>"
-                          alt="cover"
-                          class="avatar-sm"
-                        />
-                        <% } else { %>
-                        <div class="avatar-sm bg-light border"></div>
-                        <% } %>
-                        <div>
-                          <div class="fw-semibold"><%= l.name %></div>
-                          <div class="small text-muted">
-                            <%= l.category || "" %>
+                  <% } %>
+                    <% (listings || []).forEach(l=> { %>
+                      <tr>
+                        <td>
+                          <input type="checkbox" name="selectListing" value="<%= l._id %>" />
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <% if (l.coverUrl) { %>
+                              <img src="<%= l.coverUrl %>" alt="cover" class="avatar-sm" />
+                              <% } else { %>
+                                <div class="avatar-sm bg-light border"></div>
+                                <% } %>
+                                  <div>
+                                    <div class="fw-semibold">
+                                      <%= l.name %>
+                                    </div>
+                                    <div class="small text-muted">
+                                      <%= l.category || "" %>
+                                    </div>
+                                  </div>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="fw-semibold"><%= l.ownerName %></div>
-                      <div class="small text-muted"><%= l.ownerPhone %></div>
-                    </td>
-                    <td>
-                      <div><%= l.area %></div>
-                      <div class="small text-muted"><%= l.city %></div>
-                    </td>
-                    <td><%= l.submittedAtFormatted || "" %></td>
-                    <td>
-                      <% (l.tags || []).forEach(t => { %>
-                      <span class="badge bg-light text-secondary me-1 mb-1"
-                        ><%= t %></span
-                      >
+                        </td>
+                        <td>
+                          <div class="fw-semibold">
+                            <%= l.ownerName %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= l.ownerPhone %>
+                          </div>
+                        </td>
+                        <td>
+                          <div>
+                            <%= l.area %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= l.city %>
+                          </div>
+                        </td>
+                        <td>
+                          <%= l.submittedAtFormatted || "" %>
+                        </td>
+                        <td>
+                          <% (l.tags || []).forEach(t=> { %>
+                            <span class="badge bg-light text-secondary me-1 mb-1">
+                              <%= t %>
+                            </span>
+                            <% }) %>
+                        </td>
+                        <td>
+                          <% const st=l.status || "pending" ; %>
+                            <span
+                              class="badge-soft <%= st === 'approved' ? 'badge-status-approved' : '' %> <%= st === 'rejected' ? 'badge-status-rejected' : '' %> <%= st === 'pending' ? 'badge-status-pending' : '' %>">
+                              <%= st.charAt(0).toUpperCase() + st.slice(1) %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                          <a href="/admin/listings/<%= l._id %>?status=<%= encodeURIComponent(currentStatus || 'pending') %>&q=<%= encodeURIComponent(q || '') %>&page=<%= page || 1 %>"
+                            class="small text-decoration-none">
+                            View
+                          </a>
+
+                        </td>
+                      </tr>
                       <% }) %>
-                    </td>
-                    <td>
-                      <% const st = l.status || "pending"; %>
-                      <span
-                        class="badge-soft <%= st === 'approved' ? 'badge-status-approved' : '' %> <%= st === 'rejected' ? 'badge-status-rejected' : '' %> <%= st === 'pending' ? 'badge-status-pending' : '' %>"
-                      >
-                        <%= st.charAt(0).toUpperCase() + st.slice(1) %>
-                      </span>
-                    </td>
-                    <td class="text-end">
-                      <a
-  href="/admin/listings/<%= l._id %>?status=<%= encodeURIComponent(currentStatus || 'pending') %>&q=<%= encodeURIComponent(q || '') %>&page=<%= page || 1 %>"
-  class="small text-decoration-none"
->
-  View
-</a>
-
-                    </td>
-                  </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
-
-            <div
-              class="d-flex justify-content-between align-items-center px-3 py-2 border-top small text-muted"
-            >
-              <span>Page <%= page || 1 %> of <%= totalPages || 1 %></span>
-              <nav>
-                <ul class="pagination pagination-sm mb-0">
-                  <li
-                    class="page-item <%= (page || 1) <= 1 ? 'disabled' : '' %>"
-                  >
-                    <!DOCTYPE html>
-
-                    <a class="page-link" href="?page=<%= (page || 1) - 1 %>"
-                      >Previous</a
-                    >
-                  </li>
-                  <li
-                    class="page-item <%= (page || 1) >= (totalPages || 1) ? 'disabled' : '' %>"
-                  >
-                    <a class="page-link" href="?page=<%= (page || 1) + 1 %>"
-                      >Next</a
-                    >
-                  </li>
-                </ul>
-              </nav>
-            </div>
+              </tbody>
+            </table>
           </div>
-        </main>
-      </div>
-    </div>
 
-    <div class="footer text-center">
-      © <%= new Date().getFullYear() %> FindMyPG Admin. All rights reserved.
-    </div>
+          <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top small text-muted">
+            <span>Page <%= page || 1 %> of <%= totalPages || 1 %></span>
+            <nav>
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item <%= (page || 1) <= 1 ? 'disabled' : '' %>">
+                  <!DOCTYPE html>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function getSelectedIds() {
-        const checkboxes = document.querySelectorAll(
-          'input[name="selectListing"]:checked'
-        );
-        return Array.from(checkboxes).map((cb) => cb.value);
+                  <a class="page-link" href="?page=<%= (page || 1) - 1 %>">Previous</a>
+                </li>
+                <li class="page-item <%= (page || 1) >= (totalPages || 1) ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= (page || 1) + 1 %>">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="footer text-center">
+    © <%= new Date().getFullYear() %> FindMyPG Admin. All rights reserved.
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function getSelectedIds() {
+      const checkboxes = document.querySelectorAll(
+        'input[name="selectListing"]:checked'
+      );
+      return Array.from(checkboxes).map((cb) => cb.value);
+    }
+
+    function updateSelectionCount() {
+      const count = document.querySelectorAll('input[name="selectListing"]:checked').length;
+      const countSpan = document.getElementById('selectionCount');
+      if (countSpan) {
+        countSpan.textContent = `${count} items selected`;
       }
+    }
 
-      document
-        .querySelectorAll(".btn-outline-success")[0]
-        ?.addEventListener("click", async (e) => {
-          const ids = getSelectedIds();
-          if (ids.length === 0) {
-            alert("Select at least one listing");
-            return;
-          }
+    const selectAllCb = document.getElementById('selectAll');
+    const listingCbs = document.querySelectorAll('input[name="selectListing"]');
 
-          if (!confirm(`Approve ${ids.length} listing(s)?`)) return;
-
-          try {
-            const res = await fetch("/admin/listings/bulk-approve", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ids }),
-            });
-
-            const data = await res.json();
-            if (res.ok) {
-              alert(data.message);
-              location.reload(); 
-            } else {
-              alert("Error: " + data.error);
-            }
-          } catch (err) {
-            alert("Request failed: " + err.message);
-          }
+    if (selectAllCb) {
+      selectAllCb.addEventListener('change', function () {
+        const isChecked = this.checked;
+        listingCbs.forEach(cb => {
+          cb.checked = isChecked;
         });
+        updateSelectionCount();
+      });
+    }
 
-      document
-        .querySelectorAll(".btn-outline-danger")[0]
-        ?.addEventListener("click", async (e) => {
-          const ids = getSelectedIds();
-          if (ids.length === 0) {
-            alert("Select at least one listing");
-            return;
+    listingCbs.forEach(cb => {
+      cb.addEventListener('change', function () {
+        updateSelectionCount();
+
+        const allChecked = Array.from(listingCbs).every(c => c.checked);
+        if (selectAllCb) {
+          selectAllCb.checked = allChecked;
+          selectAllCb.indeterminate = !allChecked && Array.from(listingCbs).some(c => c.checked);
+        }
+      });
+    });
+
+    document
+      .querySelectorAll(".btn-outline-success")[0]
+      ?.addEventListener("click", async (e) => {
+        const ids = getSelectedIds();
+        if (ids.length === 0) {
+          alert("Select at least one listing");
+          return;
+        }
+
+        if (!confirm(`Approve ${ids.length} listing(s)?`)) return;
+
+        try {
+          const res = await fetch("/admin/listings/bulk-approve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids }),
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            alert(data.message);
+            location.reload();
+          } else {
+            alert("Error: " + data.error);
           }
+        } catch (err) {
+          alert("Request failed: " + err.message);
+        }
+      });
 
-          if (!confirm(`Reject ${ids.length} listing(s)?`)) return;
+    document
+      .querySelectorAll(".btn-outline-danger")[0]
+      ?.addEventListener("click", async (e) => {
+        const ids = getSelectedIds();
+        if (ids.length === 0) {
+          alert("Select at least one listing");
+          return;
+        }
 
-          try {
-            const res = await fetch("/admin/listings/bulk-reject", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ids }),
-            });
+        if (!confirm(`Reject ${ids.length} listing(s)?`)) return;
 
-            const data = await res.json();
-            if (res.ok) {
-              alert(data.message);
-              location.reload();
-            } else {
-              alert("Error: " + data.error);
-            }
-          } catch (err) {
-            alert("Request failed: " + err.message);
+        try {
+          const res = await fetch("/admin/listings/bulk-reject", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids }),
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            alert(data.message);
+            location.reload();
+          } else {
+            alert("Error: " + data.error);
           }
-        });
-    </script>
-  </body>
+        } catch (err) {
+          alert("Request failed: " + err.message);
+        }
+      });
+
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      });
+
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      });
+    }
+  </script>
+</body>
+
 </html>

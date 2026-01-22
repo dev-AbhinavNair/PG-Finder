@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,108 +9,146 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-
   <style>
-    body { background:#f5f7fb; }
+    body {
+      background: #f5f7fb;
+    }
 
     .topbar {
-      background:#ffffff;
+      background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
-      height:56px;
+      height: 56px;
     }
+
     .brand-link {
-      display:flex; align-items:center; gap:10px;
-      font-weight:700; color:#2563eb; text-decoration:none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #2563eb;
+      text-decoration: none;
     }
+
     .brand-icon {
-      width: 30px; height: 30px;
+      width: 30px;
+      height: 30px;
       border-radius: 10px;
-      background:#2563eb;
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:700;
+      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
     }
 
     .sidebar {
-      background:#f9fafb;
-      border-right:1px solid #e5e7eb;
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
       min-height: calc(100vh - 56px);
       padding: 14px 0;
     }
+
     .side-link {
-      display:flex; align-items:center; gap:10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 9px 18px;
-      color:#4b5563;
-      text-decoration:none;
-      font-size:.95rem;
-    }
-    .side-link:hover { background:#e5edff; }
-    .side-link.active {
-      background:#e5edff;
-      color:#111827;
-      border-left:3px solid #2563eb;
-      padding-left: 15px;
-      font-weight:600;
+      color: #4b5563;
+      text-decoration: none;
+      font-size: .95rem;
     }
 
-    .content-wrap { padding: 18px 22px 32px; }
-    .page-title { font-weight:700; font-size:1.35rem; color:#111827; }
+    .side-link:hover {
+      background: #e5edff;
+    }
+
+    .side-link.active {
+      background: #e5edff;
+      color: #111827;
+      border-left: 3px solid #2563eb;
+      padding-left: 15px;
+      font-weight: 600;
+    }
+
+    .content-wrap {
+      padding: 18px 22px 32px;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: #111827;
+    }
 
     .stat-card {
       border-radius: 14px;
       border: 1px solid #e5e7eb;
-      background:#ffffff;
+      background: #ffffff;
       padding: 12px 16px;
     }
-    .stat-label { font-size:.8rem; color:#6b7280; }
-    .stat-value { font-weight:700; font-size:1.3rem; }
+
+    .stat-label {
+      font-size: .8rem;
+      color: #6b7280;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
 
     .filter-chip {
       border-radius: 999px;
       padding: 8px 12px;
-      font-size:.85rem;
+      font-size: .85rem;
     }
 
     .table-card {
-      background:#ffffff;
+      background: #ffffff;
       border-radius: 14px;
       border: 1px solid #e5e7eb;
-      overflow:hidden;
+      overflow: hidden;
     }
 
     .badge-soft {
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:.75rem;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: .75rem;
     }
 
     .badge-status-open {
-      background:#fee2e2;
-      color:#b91c1c;
+      background: #fee2e2;
+      color: #b91c1c;
     }
+
     .badge-status-under_review {
-      background:#fef3c7;
-      color:#92400e;
+      background: #fef3c7;
+      color: #92400e;
     }
+
     .badge-status-resolved {
-      background:#dcfce7;
-      color:#166534;
+      background: #dcfce7;
+      color: #166534;
     }
+
     .badge-status-dismissed {
-      background:#f3f4f6;
-      color:#6b7280;
+      background: #f3f4f6;
+      color: #6b7280;
     }
 
     .badge-action-warning {
-      background:#fef3c7;
-      color:#92400e;
+      background: #fef3c7;
+      color: #92400e;
     }
+
     .badge-action-suspend {
-      background:#fee2e2;
-      color:#b91c1c;
+      background: #fee2e2;
+      color: #b91c1c;
     }
+
     .badge-action-ban {
-      background:#7c2d12;
-      color:#fff;
+      background: #7c2d12;
+      color: #fff;
     }
 
     .modal-header {
@@ -117,11 +156,52 @@
     }
 
     .footer {
-      background:#ffffff;
-      border-top:1px solid #e5e7eb;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
       padding: 16px 24px;
-      font-size:.85rem;
-      color:#9ca3af;
+      font-size: .85rem;
+      color: #9ca3af;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        z-index: 1040;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1030;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+      }
+
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
     }
   </style>
 </head>
@@ -129,23 +209,28 @@
 <body>
   <nav class="navbar topbar px-3">
     <div class="container-fluid">
-      <a class="brand-link" href="">
-        <div class="brand-icon">A</div>
-        <span>FindMyPG Admin</span>
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
+          <i class="bi bi-list"></i>
+        </button>
+        <a class="brand-link" href="">
+          <div class="brand-icon">A</div>
+          <span>FindMyPG Admin</span>
+        </a>
+      </div>
 
       <div class="ms-auto d-flex align-items-center gap-3">
         <span class="small text-secondary d-none d-md-inline">
           <% if (admin && admin.name) { %>
             <%= admin.name %>
-          <% } else { %>
-            Admin
-          <% } %>
+              <% } else { %>
+                Admin
+                <% } %>
         </span>
         <div class="rounded-circle bg-light border" style="width:32px;height:32px;overflow:hidden;">
           <% if (admin && admin.avatar_url) { %>
             <img src="<%= admin.avatar_url %>" style="width:100%;height:100%;object-fit:cover;" alt="avatar">
-          <% } %>
+            <% } %>
         </div>
       </div>
     </div>
@@ -168,6 +253,7 @@
           <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Logout</button>
         </form>
       </aside>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <main class="col-12 col-md-9 col-lg-10 content-wrap">
         <h4 class="page-title mb-3">User Reports & Moderation</h4>
@@ -176,19 +262,25 @@
           <div class="col-6 col-md-4">
             <div class="stat-card">
               <div class="stat-label">Open Reports</div>
-              <div class="stat-value"><%= stats ? stats.open : 0 %></div>
+              <div class="stat-value">
+                <%= stats ? stats.open : 0 %>
+              </div>
             </div>
           </div>
           <div class="col-6 col-md-4">
             <div class="stat-card">
               <div class="stat-label">Resolved</div>
-              <div class="stat-value"><%= stats ? stats.resolved : 0 %></div>
+              <div class="stat-value">
+                <%= stats ? stats.resolved : 0 %>
+              </div>
             </div>
           </div>
           <div class="col-6 col-md-4">
             <div class="stat-card">
               <div class="stat-label">Total Reports</div>
-              <div class="stat-value"><%= stats ? stats.total : 0 %></div>
+              <div class="stat-value">
+                <%= stats ? stats.total : 0 %>
+              </div>
             </div>
           </div>
         </div>
@@ -196,10 +288,15 @@
         <div class="row g-2 align-items-center mb-3">
           <div class="col-12">
             <div class="d-flex gap-2 flex-wrap">
-              <a href="/admin/reports?status=all" class="btn btn-outline-secondary filter-chip <%= currentStatus === 'all' ? 'active' : '' %>">All</a>
-              <a href="/admin/reports?status=open" class="btn btn-outline-danger filter-chip <%= currentStatus === 'open' ? 'active' : '' %>">Open</a>
-              <a href="/admin/reports?status=under_review" class="btn btn-outline-warning filter-chip <%= currentStatus === 'under_review' ? 'active' : '' %>">Under Review</a>
-              <a href="/admin/reports?status=resolved" class="btn btn-outline-success filter-chip <%= currentStatus === 'resolved' ? 'active' : '' %>">Resolved</a>
+              <a href="/admin/reports?status=all"
+                class="btn btn-outline-secondary filter-chip <%= currentStatus === 'all' ? 'active' : '' %>">All</a>
+              <a href="/admin/reports?status=open"
+                class="btn btn-outline-danger filter-chip <%= currentStatus === 'open' ? 'active' : '' %>">Open</a>
+              <a href="/admin/reports?status=under_review"
+                class="btn btn-outline-warning filter-chip <%= currentStatus === 'under_review' ? 'active' : '' %>">Under
+                Review</a>
+              <a href="/admin/reports?status=resolved"
+                class="btn btn-outline-success filter-chip <%= currentStatus === 'resolved' ? 'active' : '' %>">Resolved</a>
             </div>
           </div>
         </div>
@@ -220,57 +317,78 @@
                 </tr>
               </thead>
               <tbody>
-                <% if (!reports || reports.length === 0) { %>
+                <% if (!reports || reports.length===0) { %>
                   <tr>
                     <td colspan="8" class="text-center text-muted py-4">
                       No reports found.
                     </td>
                   </tr>
-                <% } %>
+                  <% } %>
 
-                <% (reports || []).forEach(r => { %>
-                  <tr>
-                    <td>
-                      <div class="fw-semibold"><%= r.pgName %></div>
-                      <div class="small text-muted"><%= r.pgArea %>, <%= r.pgCity %></div>
-                    </td>
-                    <td>
-                      <div class="fw-semibold"><%= r.pgOwner %></div>
-                      <div class="small text-muted"><%= r.ownerPhone %></div>
-                    </td>
-                    <td>
-                      <div class="fw-semibold"><%= r.reportedBy %></div>
-                      <div class="small text-muted"><%= r.reporterPhone %></div>
-                    </td>
-                    <td>
-                      <span class="text-capitalize"><%= r.reason.replace(/_/g, ' ') %></span>
-                      <div class="small text-muted mt-1"><%= r.description.substring(0, 50) %><% if (r.description.length > 50) { %>...<% } %></div>
-                    </td>
-                    <td><%= r.reportedAtFormatted %></td>
-                    <td>
-                      <% const st = r.status; %>
-                      <span class="badge-soft badge-status-<%= st %>">
-                        <%= st.charAt(0).toUpperCase() + st.slice(1).replace(/_/g, ' ') %>
-                      </span>
-                    </td>
-                    <td>
-                      <% if (r.adminAction !== 'none') { %>
-                        <span class="badge-soft badge-action-<%= r.adminAction %>">
-                          <%= r.adminAction.charAt(0).toUpperCase() + r.adminAction.slice(1) %>
-                        </span>
-                      <% } else { %>
-                        <span class="small text-muted">—</span>
-                      <% } %>
-                    </td>
-                    <td class="text-end">
-                      <% if (r.status === 'open' || r.status === 'under_review') { %>
-                        <a href="/admin/reports/<%= r._id %>" class="btn btn-sm btn-outline-primary">View</a>
-                      <% } else { %>
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="viewReport('<%= r._id %>', '<%= r.adminNotes %>'); return false;">View</button>
-                      <% } %>
-                    </td>
-                  </tr>
-                <% }) %>
+                    <% (reports || []).forEach(r=> { %>
+                      <tr>
+                        <td>
+                          <div class="fw-semibold">
+                            <%= r.pgName %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= r.pgArea %>, <%= r.pgCity %>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="fw-semibold">
+                            <%= r.pgOwner %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= r.ownerPhone %>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="fw-semibold">
+                            <%= r.reportedBy %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= r.reporterPhone %>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="text-capitalize">
+                            <%= r.reason.replace(/_/g, ' ' ) %>
+                          </span>
+                          <div class="small text-muted mt-1">
+                            <%= r.description.substring(0, 50) %>
+                              <% if (r.description.length> 50) { %>...<% } %>
+                          </div>
+                        </td>
+                        <td>
+                          <%= r.reportedAtFormatted %>
+                        </td>
+                        <td>
+                          <% const st=r.status; %>
+                            <span class="badge-soft badge-status-<%= st %>">
+                              <%= st.charAt(0).toUpperCase() + st.slice(1).replace(/_/g, ' ' ) %>
+                            </span>
+                        </td>
+                        <td>
+                          <% if (r.adminAction !=='none' ) { %>
+                            <span class="badge-soft badge-action-<%= r.adminAction %>">
+                              <%= r.adminAction.charAt(0).toUpperCase() + r.adminAction.slice(1) %>
+                            </span>
+                            <% } else { %>
+                              <span class="small text-muted">—</span>
+                              <% } %>
+                        </td>
+                        <td class="text-end">
+                          <% if (r.status==='open' || r.status==='under_review' ) { %>
+                            <a href="/admin/reports/<%= r._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                            <% } else { %>
+                              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                data-bs-target="#viewModal"
+                                onclick="viewReport('<%= r._id %>', '<%= r.adminNotes %>'); return false;">View</button>
+                              <% } %>
+                        </td>
+                      </tr>
+                      <% }) %>
               </tbody>
             </table>
           </div>
@@ -394,7 +512,24 @@
         alert('Request failed: ' + err.message);
       }
     }
+
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      });
+
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      });
+    }
   </script>
 
 </body>
+
 </html>

@@ -9,7 +9,6 @@ const instance = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-
 const getSearchResults = async (req, res) => {
     try {
         const { q, area } = req.query;
@@ -337,7 +336,6 @@ const reportPg = async (req, res) => {
         res.redirect(`/pgs/${req.params.id}?error=Failed to submit report`);
     }
 };
-
 
 const createOrder = async (req, res) => {
     try {

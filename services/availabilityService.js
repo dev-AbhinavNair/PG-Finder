@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 
 class AvailabilityService {
-    
+
     static async isPgAvailable(pgId, checkInDate, checkOutDate, excludeBookingId = null) {
         try {
             const hasConflict = await Booking.checkDateConflict(
-                pgId, 
-                checkInDate, 
-                checkOutDate, 
+                pgId,
+                checkInDate,
+                checkOutDate,
                 excludeBookingId
             );
             return !hasConflict;
@@ -18,7 +18,6 @@ class AvailabilityService {
         }
     }
 
-    
     static async getBookedDates(pgId, startDate, endDate) {
         try {
             return await Booking.getBookedDates(pgId, startDate, endDate);
@@ -28,7 +27,6 @@ class AvailabilityService {
         }
     }
 
-    
     static async getUnavailableDateRanges(pgId) {
         try {
             const bookings = await Booking.find({
@@ -47,7 +45,6 @@ class AvailabilityService {
         }
     }
 
-    
     static async getAvailabilityCalendar(pgId) {
         try {
             const today = new Date();
@@ -75,7 +72,6 @@ class AvailabilityService {
         }
     }
 
-    
     static validateDateRange(checkInDate, checkOutDate) {
         const errors = [];
         const today = new Date();

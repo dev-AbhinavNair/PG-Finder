@@ -94,7 +94,6 @@ exports.getListings = async (req, res) => {
   }
 };
 
-
 exports.getReports = async (req, res) => {
   try {
     const page = parseInt(req.query.page || "1", 10);
@@ -185,7 +184,6 @@ exports.getReports = async (req, res) => {
   }
 };
 
-
 exports.warnPgOwner = async (req, res) => {
   try {
     const { reportId } = req.params;
@@ -241,7 +239,6 @@ exports.banPgListing = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
 
 exports.getReportDetails = async (req, res) => {
   try {
@@ -315,11 +312,9 @@ exports.getReportDetails = async (req, res) => {
   }
 };
 
-
 exports.getListingDetails = async (req, res) => {
   try {
     const { listingId } = req.params;
-
 
     const backStatus = req.query.status || "pending";
     const backQ = req.query.q || "";
@@ -383,7 +378,6 @@ exports.getListingDetails = async (req, res) => {
       admin,
       listing: listingData,
 
-
       back: { status: backStatus, q: backQ, page: backPage },
     });
   } catch (err) {
@@ -391,7 +385,6 @@ exports.getListingDetails = async (req, res) => {
     res.status(500).render("404", { message: "Error loading listing" });
   }
 };
-
 
 exports.approveListing = async (req, res) => {
   try {
@@ -420,7 +413,6 @@ exports.rejectListing = async (req, res) => {
       status: "unpublished",
     });
 
-
     res.json({
       success: true,
       message: "Listing rejected and unpublished",
@@ -430,7 +422,6 @@ exports.rejectListing = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
 
 exports.getSettings = async (req, res) => {
   try {
@@ -499,7 +490,6 @@ exports.getSystemStats = async (req, res) => {
   }
 };
 
-
 exports.getListings = async (req, res) => {
   try {
     const page = parseInt(req.query.page || "1", 10);
@@ -507,7 +497,7 @@ exports.getListings = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const q = req.query.q || "";
-    const statusParam = (req.query.status || "pending").toLowerCase();
+    const statusParam = (req.query.status || "all").toLowerCase();
 
     const statusMap = {
       pending: "pending_approval",

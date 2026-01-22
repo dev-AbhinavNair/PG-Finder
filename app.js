@@ -5,13 +5,11 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
 app.use("/uploads", express.static("uploads"));
-
 
 function attachUser(req, res, next) {
   const token = req.cookies.token;
@@ -26,13 +24,10 @@ function attachUser(req, res, next) {
 }
 app.use(attachUser);
 
-
 dotenv.config();
 app.set("view engine", "ejs");
 
-
 const { requireAuth, requireAdmin } = require("./middleware/auth");
-
 
 const authRouter = require("./router/authRouter");
 app.use("/", authRouter);
@@ -67,11 +62,9 @@ app.get("/home", requireAuth, async (req, res) => {
   return seekerController.renderHome(req, res);
 });
 
-
 const adminRouter = require("./router/adminRouter");
 
 app.use("/admin", adminRouter);
-
 
 app.use((req, res) => {
   res.status(404).render("errors/404", { url: req.originalUrl });
@@ -83,8 +76,6 @@ app.use((err, req, res, next) => {
     message: err.message || "Something went wrong",
   });
 });
-
-
 
 mongoose
   .connect(process.env.MONGO_URI)

@@ -206,24 +206,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const submitBtn = form.querySelector('button[type="submit"]');
 
-    // Set minimum check-out date when check-in date changes
     checkInDate.addEventListener('change', function() {
         const checkIn = new Date(this.value);
         const minCheckOut = new Date(checkIn);
         minCheckOut.setDate(minCheckOut.getDate() + 30);
-        
+
         checkOutDate.min = minCheckOut.toISOString().split('T')[0];
         checkOutDate.disabled = false;
-        
-        // Clear check-out date if it's before the new minimum
+
         if (checkOutDate.value && new Date(checkOutDate.value) < minCheckOut) {
             checkOutDate.value = '';
         }
-        
+
         checkAvailability();
     });
 
-    // Check availability when check-out date changes
     checkOutDate.addEventListener('change', checkAvailability);
 
     function checkAvailability() {
@@ -234,23 +231,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const checkIn = new Date(checkInDate.value);
         const checkOut = new Date(checkOutDate.value);
-        
-        // Validate minimum stay
+
         const minCheckOut = new Date(checkIn);
         minCheckOut.setDate(minCheckOut.getDate() + 30);
-        
+
         if (checkOut < minCheckOut) {
             showAvailabilityError('Minimum stay of 30 days required');
             return;
         }
 
-        // Show loading state
         availabilityInfo.style.display = 'block';
         availabilityMessage.textContent = 'Checking availability...';
         availabilityInfo.className = 'mb-3';
         availabilityInfo.querySelector('.alert').className = 'alert alert-info';
 
-        // Check availability via API
         fetch(`/api/pgs/${document.querySelector('form').action.split('/')[4]}/availability?check_in=${checkInDate.value}&check_out=${checkOutDate.value}`)
             .then(response => response.json())
             .then(data => {
@@ -283,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function() {
         availabilityInfo.querySelector('.alert').className = 'alert alert-danger';
     }
 
-    // Form validation
     form.addEventListener('submit', function(e) {
         if (!checkInDate.value || !checkOutDate.value) {
             e.preventDefault();
@@ -293,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const checkIn = new Date(checkInDate.value);
         const checkOut = new Date(checkOutDate.value);
-        
+
         if (checkOut <= checkIn) {
             e.preventDefault();
             showAvailabilityError('Check-out date must be after check-in date');
@@ -302,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const minCheckOut = new Date(checkIn);
         minCheckOut.setDate(minCheckOut.getDate() + 30);
-        
+
         if (checkOut < minCheckOut) {
             e.preventDefault();
             showAvailabilityError('Minimum stay of 30 days required');
@@ -310,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize
     checkOutDate.disabled = true;
 });
 </script>

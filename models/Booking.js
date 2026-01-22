@@ -38,7 +38,7 @@ const bookingSchema = new mongoose.Schema(
       validate: {
         validator: function(value) {
           if (!this.check_in_date) return false;
-          const minStay = 30; 
+          const minStay = 30;
           const minCheckOut = new Date(this.check_in_date);
           minCheckOut.setDate(minCheckOut.getDate() + minStay);
           return value >= minCheckOut;
@@ -109,7 +109,7 @@ bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) 
     const start = new Date(booking.check_in_date);
     const end = new Date(booking.check_out_date);
     const current = new Date(start);
-    
+
     while (current <= end) {
       if (current >= startDate && current <= endDate) {
         bookedDates.push(new Date(current));
@@ -124,11 +124,11 @@ bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) 
 bookingSchema.pre('save', async function(next) {
   if (this.isNew && this.check_in_date && this.check_out_date) {
     const hasConflict = await this.constructor.checkDateConflict(
-      this.pg_id, 
-      this.check_in_date, 
+      this.pg_id,
+      this.check_in_date,
       this.check_out_date
     );
-    
+
     if (hasConflict) {
       const error = new Error('PG is not available for the selected dates');
       error.name = 'ValidationError';

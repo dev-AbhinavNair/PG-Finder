@@ -19,8 +19,6 @@ const toTitleCase = (str) => {
   });
 };
 
-
-
 const cloudinary = require('../config/cloudinary');
 
 const storage = multer.diskStorage({
@@ -95,7 +93,6 @@ router.get("/", requireAuth, requireOwner, async (req, res) => {
   }
 });
 
-
 router.get("/pg/new", requireAuth, requireOwner, async (req, res) => {
   const owner = await User.findById(req.user.userId);
   return res.render("owner/add-pg", { owner, error: null, form: {} });
@@ -148,7 +145,6 @@ router.post("/pg", requireAuth, requireOwner, upload.array("photos", 8), async (
     return res.redirect(`/owner/pg/new?error=Failed to create PG`);
   }
 });
-
 
 router.get("/pg/:id/edit", requireAuth, requireOwner, async (req, res) => {
   try {
@@ -227,7 +223,6 @@ router.post("/pg/:id/edit", requireAuth, requireOwner, upload.array("photos", 8)
     return res.redirect(`/owner/pg/${req.params.id}/edit?error=Failed to update PG`);
   }
 });
-
 
 router.get("/bookings", requireAuth, requireOwner, async (req, res) => {
   try {
@@ -385,7 +380,6 @@ router.get("/payouts", requireAuth, requireOwner, async (req, res) => {
   }
 });
 
-
 router.get("/settings", requireAuth, requireOwner, async (req, res) => {
   try {
     const owner = await User.findById(req.user.userId);
@@ -427,7 +421,6 @@ router.post("/settings", requireAuth, requireOwner, upload.single("avatar"), asy
     return res.redirect("/owner/settings?error=Failed to update settings");
   }
 });
-
 
 router.post("/payouts/request", requireAuth, requireOwner, async (req, res) => {
   try {
@@ -496,7 +489,6 @@ router.delete("/pg/:id/delete", requireAuth, requireOwner, async (req, res) => {
     return res.json({ success: false, error: err.message });
   }
 });
-
 
 router.post("/bookings/:id/approve", requireAuth, requireOwner, async (req, res) => {
   try {

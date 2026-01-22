@@ -304,7 +304,7 @@
                         <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal"
                             data-index="<%= index %>">
                             <img src="<%= url %>" alt="Photo <%= index + 1 %>">
-                            <!-- <span class="zoom-hint"><i class="bi bi-zoom-in me-1"></i>Click to zoom</span> -->
+
                         </div>
                         <% }); %>
                             <% } else { %>
@@ -490,7 +490,7 @@
     <script>
         (function () {
             const allImages = [];
-            <% 
+            <%
             const imgUrls = [];
             if (pg.cover_url) imgUrls.push(pg.cover_url);
             if (pg.gallery_urls && pg.gallery_urls.length > 0) {

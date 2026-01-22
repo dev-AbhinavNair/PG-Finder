@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,50 +9,70 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-
   <style>
-    body { background:#f5f7fb; }
+    body {
+      background: #f5f7fb;
+    }
 
     .topbar {
-      background:#ffffff;
+      background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
-      height:56px;
+      height: 56px;
     }
+
     .brand-link {
-      display:flex; align-items:center; gap:10px;
-      font-weight:700; color:#2563eb; text-decoration:none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #2563eb;
+      text-decoration: none;
     }
+
     .brand-icon {
-      width: 30px; height: 30px;
+      width: 30px;
+      height: 30px;
       border-radius: 10px;
-      background:#2563eb;
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:700;
+      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
     }
 
     .sidebar {
-      background:#f9fafb;
-      border-right:1px solid #e5e7eb;
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
       min-height: calc(100vh - 56px);
       padding: 14px 0;
     }
+
     .side-link {
-      display:flex; align-items:center; gap:10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 9px 18px;
-      color:#4b5563;
-      text-decoration:none;
-      font-size:.95rem;
-    }
-    .side-link:hover { background:#e5edff; }
-    .side-link.active {
-      background:#e5edff;
-      color:#111827;
-      border-left:3px solid #2563eb;
-      padding-left: 15px;
-      font-weight:600;
+      color: #4b5563;
+      text-decoration: none;
+      font-size: .95rem;
     }
 
-    .content-wrap { padding: 18px 22px 32px; }
+    .side-link:hover {
+      background: #e5edff;
+    }
+
+    .side-link.active {
+      background: #e5edff;
+      color: #111827;
+      border-left: 3px solid #2563eb;
+      padding-left: 15px;
+      font-weight: 600;
+    }
+
+    .content-wrap {
+      padding: 18px 22px 32px;
+    }
 
     .page-header {
       display: flex;
@@ -59,6 +80,7 @@
       justify-content: space-between;
       margin-bottom: 24px;
     }
+
     .back-btn {
       display: inline-flex;
       align-items: center;
@@ -67,7 +89,10 @@
       text-decoration: none;
       font-size: 0.95rem;
     }
-    .back-btn:hover { color: #1d4ed8; }
+
+    .back-btn:hover {
+      color: #1d4ed8;
+    }
 
     .report-header {
       background: #ffffff;
@@ -79,17 +104,20 @@
       justify-content: space-between;
       align-items: start;
     }
+
     .report-id {
       font-size: 1.8rem;
       font-weight: 700;
       color: #111827;
     }
+
     .report-meta {
       display: flex;
       gap: 16px;
       margin-top: 8px;
       flex-wrap: wrap;
     }
+
     .report-meta-item {
       display: flex;
       align-items: center;
@@ -104,11 +132,31 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .badge-priority-high { background: #fee2e2; color: #b91c1c; }
-    .badge-priority-medium { background: #fef3c7; color: #92400e; }
-    .badge-status-open { background: #fee2e2; color: #b91c1c; }
-    .badge-status-under_review { background: #fef3c7; color: #92400e; }
-    .badge-status-resolved { background: #dcfce7; color: #166534; }
+
+    .badge-priority-high {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .badge-priority-medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-status-open {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .badge-status-under_review {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-status-resolved {
+      background: #dcfce7;
+      color: #166534;
+    }
 
     .card-section {
       background: #ffffff;
@@ -117,6 +165,7 @@
       padding: 20px;
       margin-bottom: 20px;
     }
+
     .section-title {
       font-size: 1.1rem;
       font-weight: 700;
@@ -132,21 +181,30 @@
       padding: 12px 0;
       border-bottom: 1px solid #f3f4f6;
     }
-    .info-row:last-child { border-bottom: none; }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
     .info-label {
       color: #6b7280;
       font-size: 0.9rem;
       font-weight: 500;
     }
+
     .info-value {
       color: #111827;
       font-weight: 600;
     }
+
     .info-value.link {
       color: #2563eb;
       text-decoration: none;
     }
-    .info-value.link:hover { text-decoration: underline; }
+
+    .info-value.link:hover {
+      text-decoration: underline;
+    }
 
     .description-box {
       background: #f9fafb;
@@ -164,6 +222,7 @@
       gap: 8px;
       margin-top: 8px;
     }
+
     .amenity-tag {
       background: #f3f4f6;
       border: 1px solid #e5e7eb;
@@ -178,6 +237,7 @@
       gap: 12px;
       margin-top: 16px;
     }
+
     .btn-custom {
       padding: 10px 20px;
       border-radius: 8px;
@@ -186,21 +246,33 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .btn-warn {
       background: #fbbf24;
       color: #78350f;
     }
-    .btn-warn:hover { background: #f59e0b; }
+
+    .btn-warn:hover {
+      background: #f59e0b;
+    }
+
     .btn-ban {
       background: #ef4444;
       color: #fff;
     }
-    .btn-ban:hover { background: #dc2626; }
+
+    .btn-ban:hover {
+      background: #dc2626;
+    }
+
     .btn-resolve {
       background: #10b981;
       color: #fff;
     }
-    .btn-resolve:hover { background: #059669; }
+
+    .btn-resolve:hover {
+      background: #059669;
+    }
 
     .resolved-section {
       background: #dcfce7;
@@ -209,17 +281,59 @@
       padding: 16px;
       margin-top: 16px;
     }
+
     .resolved-section .section-title {
       color: #166534;
       border-bottom: 1px solid #86efac;
     }
 
     .footer {
-      background:#ffffff;
-      border-top:1px solid #e5e7eb;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
       padding: 16px 24px;
-      font-size:.85rem;
-      color:#9ca3af;
+      font-size: .85rem;
+      color: #9ca3af;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        z-index: 1040;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1030;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+      }
+
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
     }
   </style>
 </head>
@@ -227,23 +341,28 @@
 <body>
   <nav class="navbar topbar px-3">
     <div class="container-fluid">
-      <a class="brand-link" href="">
-        <div class="brand-icon">A</div>
-        <span>FindMyPG Admin</span>
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
+          <i class="bi bi-list"></i>
+        </button>
+        <a class="brand-link" href="">
+          <div class="brand-icon">A</div>
+          <span>FindMyPG Admin</span>
+        </a>
+      </div>
 
       <div class="ms-auto d-flex align-items-center gap-3">
         <span class="small text-secondary d-none d-md-inline">
           <% if (admin && admin.name) { %>
             <%= admin.name %>
-          <% } else { %>
-            Admin
-          <% } %>
+              <% } else { %>
+                Admin
+                <% } %>
         </span>
         <div class="rounded-circle bg-light border" style="width:32px;height:32px;overflow:hidden;">
           <% if (admin && admin.avatar_url) { %>
             <img src="<%= admin.avatar_url %>" style="width:100%;height:100%;object-fit:cover;" alt="avatar">
-          <% } %>
+            <% } %>
         </div>
       </div>
     </div>
@@ -266,16 +385,20 @@
           <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Logout</button>
         </form>
       </aside>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <main class="col-12 col-md-9 col-lg-10 content-wrap">
         <a href="/admin/reports" class="back-btn">← Back to Reports</a>
 
         <div class="report-header">
           <div>
-            <div class="report-id"><%= report.reportId %></div>
+            <div class="report-id">
+              <%= report.reportId %>
+            </div>
             <div class="report-meta">
               <div class="report-meta-item">
-                <i class="bi bi-list-ul"></i> <%= report.pgName %>
+                <i class="bi bi-list-ul"></i>
+                <%= report.pgName %>
               </div>
               <div class="report-meta-item">
                 📅 <%= report.reportedAtFormatted %>
@@ -289,7 +412,7 @@
           </div>
           <div style="text-align: right;">
             <span class="badge-soft badge-status-<%= report.status %>">
-              <%= report.status.charAt(0).toUpperCase() + report.status.slice(1).replace(/_/g, ' ') %>
+              <%= report.status.charAt(0).toUpperCase() + report.status.slice(1).replace(/_/g, ' ' ) %>
             </span>
           </div>
         </div>
@@ -303,103 +426,135 @@
               </div>
               <div class="info-row" style="margin-top: 12px; border: none;">
                 <strong>Reason:</strong>
-                <span class="text-capitalize"><%= report.reason.replace(/_/g, ' ') %></span>
+                <span class="text-capitalize">
+                  <%= report.reason.replace(/_/g, ' ' ) %>
+                </span>
               </div>
             </div>
 
             <div class="card-section">
               <div class="section-title">PG Listing Details</div>
-              
+
               <div class="info-row">
                 <span class="info-label">Listing Name</span>
-                <span class="info-value"><a href="#" class="info-value link"><%= report.pgName %></a></span>
+                <span class="info-value"><a href="#" class="info-value link">
+                    <%= report.pgName %>
+                  </a></span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Location</span>
-                <span class="info-value"><%= report.pgArea %>, <%= report.pgCity %></span>
+                <span class="info-value">
+                  <%= report.pgArea %>, <%= report.pgCity %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Address</span>
-                <span class="info-value"><%= report.pgAddress %></span>
+                <span class="info-value">
+                  <%= report.pgAddress %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Rent Range</span>
-                <span class="info-value"><%= report.pgPrice %></span>
+                <span class="info-value">
+                  <%= report.pgPrice %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Status</span>
-                <span class="info-value text-capitalize"><%= report.pgStatus %></span>
+                <span class="info-value text-capitalize">
+                  <%= report.pgStatus %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Amenities</span>
               </div>
               <div class="amenities-list">
-                <% (report.pgAmenities || []).forEach(amenity => { %>
-                  <span class="amenity-tag"><%= amenity %></span>
-                <% }); %>
+                <% (report.pgAmenities || []).forEach(amenity=> { %>
+                  <span class="amenity-tag">
+                    <%= amenity %>
+                  </span>
+                  <% }); %>
               </div>
             </div>
 
             <div class="card-section">
               <div class="section-title">Reporter Information</div>
-              
+
               <div class="info-row">
                 <span class="info-label">Name</span>
-                <span class="info-value"><%= report.reportedBy %></span>
+                <span class="info-value">
+                  <%= report.reportedBy %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Phone</span>
-                <span class="info-value"><a href="tel:<%= report.reporterPhone %>" class="info-value link"><%= report.reporterPhone %></a></span>
+                <span class="info-value"><a href="tel:<%= report.reporterPhone %>" class="info-value link">
+                    <%= report.reporterPhone %>
+                  </a></span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Email</span>
-                <span class="info-value"><a href="mailto:<%= report.reporterEmail %>" class="info-value link"><%= report.reporterEmail %></a></span>
+                <span class="info-value"><a href="mailto:<%= report.reporterEmail %>" class="info-value link">
+                    <%= report.reporterEmail %>
+                  </a></span>
               </div>
             </div>
 
             <div class="card-section">
               <div class="section-title">PG Owner Information</div>
-              
+
               <div class="info-row">
                 <span class="info-label">Name</span>
-                <span class="info-value"><%= report.pgOwner %></span>
+                <span class="info-value">
+                  <%= report.pgOwner %>
+                </span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Phone</span>
-                <span class="info-value"><a href="tel:<%= report.pgOwnerPhone %>" class="info-value link"><%= report.pgOwnerPhone %></a></span>
+                <span class="info-value"><a href="tel:<%= report.pgOwnerPhone %>" class="info-value link">
+                    <%= report.pgOwnerPhone %>
+                  </a></span>
               </div>
 
               <div class="info-row">
                 <span class="info-label">Email</span>
-                <span class="info-value"><a href="mailto:<%= report.pgOwnerEmail %>" class="info-value link"><%= report.pgOwnerEmail %></a></span>
+                <span class="info-value"><a href="mailto:<%= report.pgOwnerEmail %>" class="info-value link">
+                    <%= report.pgOwnerEmail %>
+                  </a></span>
               </div>
             </div>
 
-            <% if (report.status === 'resolved') { %>
+            <% if (report.status==='resolved' ) { %>
               <div class="resolved-section">
                 <div class="section-title">Resolution Details</div>
-                
+
                 <div class="info-row">
                   <span class="info-label">Action Taken</span>
-                  <span class="info-value text-capitalize"><%= report.adminAction %></span>
+                  <span class="info-value text-capitalize">
+                    <%= report.adminAction %>
+                  </span>
                 </div>
 
                 <div class="info-row">
                   <span class="info-label">Resolved By</span>
-                  <span class="info-value"><%= report.resolvedBy %></span>
+                  <span class="info-value">
+                    <%= report.resolvedBy %>
+                  </span>
                 </div>
 
                 <div class="info-row">
                   <span class="info-label">Resolved Date</span>
-                  <span class="info-value"><%= report.resolvedAtFormatted %></span>
+                  <span class="info-value">
+                    <%= report.resolvedAtFormatted %>
+                  </span>
                 </div>
 
                 <div class="info-row" style="border: none;">
@@ -409,26 +564,29 @@
                   <%= report.adminNotes %>
                 </div>
               </div>
-            <% } %>
+              <% } %>
           </div>
 
           <div class="col-lg-4">
-            <% if (report.status !== 'resolved') { %>
+            <% if (report.status !=='resolved' ) { %>
               <div class="card-section">
                 <div class="section-title">Admin Actions</div>
 
                 <div class="action-buttons" style="flex-direction: column;">
-                  <button class="btn-custom btn-warn" onclick="openWarnModal()"><i class="bi bi-exclamation-circle"></i> Send Warning</button>
-                  <button class="btn-custom btn-ban" onclick="openBanModal()"><i class="bi bi-ban"></i> Suspend/Ban</button>
+                  <button class="btn-custom btn-warn" onclick="openWarnModal()"><i class="bi bi-exclamation-circle"></i>
+                    Send Warning</button>
+                  <button class="btn-custom btn-ban" onclick="openBanModal()"><i class="bi bi-ban"></i>
+                    Suspend/Ban</button>
                 </div>
               </div>
-            <% } %>
+              <% } %>
 
-            <div class="card-section">
-              <div class="section-title">Add Internal Note</div>
-              <textarea class="form-control" id="internalNote" rows="5" placeholder="Add a private note about this report..."></textarea>
-              <button class="btn btn-outline-secondary btn-sm mt-3 w-100" onclick="saveNote()">Save Note</button>
-            </div>
+                <div class="card-section">
+                  <div class="section-title">Add Internal Note</div>
+                  <textarea class="form-control" id="internalNote" rows="5"
+                    placeholder="Add a private note about this report..."></textarea>
+                  <button class="btn btn-outline-secondary btn-sm mt-3 w-100" onclick="saveNote()">Save Note</button>
+                </div>
           </div>
         </div>
       </main>
@@ -445,7 +603,8 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Warning Message</label>
-            <textarea class="form-control" id="warnMessage" rows="4" placeholder="Explain the violation and what the owner should do..."></textarea>
+            <textarea class="form-control" id="warnMessage" rows="4"
+              placeholder="Explain the violation and what the owner should do..."></textarea>
           </div>
           <div class="mb-3">
             <label class="form-label">Admin Notes</label>
@@ -478,7 +637,8 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Reason for Action</label>
-            <textarea class="form-control" id="banReason" rows="4" placeholder="Explain why you're taking this action..."></textarea>
+            <textarea class="form-control" id="banReason" rows="4"
+              placeholder="Explain why you're taking this action..."></textarea>
           </div>
           <div class="alert alert-warning small">
             <i class="bi bi-exclamation-circle"></i>️ This will immediately unpublish the listing and notify the owner.
@@ -571,11 +731,27 @@
       }
     }
 
-
     function saveNote() {
       alert('Internal note saved - coming soon');
+    }
+
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      });
+
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      });
     }
   </script>
 
 </body>
+
 </html>

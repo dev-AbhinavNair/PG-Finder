@@ -129,6 +129,47 @@
             background: #fff;
         }
 
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed;
+                top: 56px;
+                bottom: 0;
+                left: 0;
+                width: 260px;
+                transform: translateX(-100%);
+                z-index: 1040;
+                transition: transform 0.3s ease-in-out;
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                top: 56px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 1030;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s;
+            }
+
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
         code.badge-like {
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
@@ -143,6 +184,9 @@
 <body>
     <nav class="navbar topbar navbar-expand-lg px-3" style="height:56px;">
         <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
             <div class="brand-dot">🏠</div>
             <span class="fw-semibold" style="color:#0f766e;">FindMyPG Owner</span>
         </div>
@@ -187,6 +231,7 @@
                     <button class="btn btn-outline-secondary w-100 btn-sm" type="submit">Logout</button>
                 </form>
             </aside>
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
             <main class="col-12 col-md-9 col-lg-10 content-wrap">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
@@ -348,7 +393,8 @@
                                                 style="border-radius: 12px;">
                                                 Save changes
                                             </button>
-                                            <button type="button" class="btn btn-danger px-4" id="deleteBtn" style="border-radius: 12px;">
+                                            <button type="button" class="btn btn-danger px-4" id="deleteBtn"
+                                                style="border-radius: 12px;">
                                                 Delete PG
                                             </button>
                                         </div>
@@ -404,7 +450,6 @@
                                                         </div>
                                                         <% } %>
                                             </div>
-
 
                                             <div class="col-12">
                                                 <div class="alert alert-light border mb-0 small muted">
@@ -470,9 +515,23 @@
                 }, 500);
             }
         });
+
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        if (toggleBtn && sidebar && overlay) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        }
     </script>
-
-
 
 </body>
 

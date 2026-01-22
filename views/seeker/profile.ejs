@@ -256,7 +256,6 @@
             font-size: 1.1rem;
         }
 
-        /* Empty state */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -276,7 +275,6 @@
             margin-bottom: 16px;
         }
 
-        /* Modal Styles */
         .modal-content {
             border-radius: 16px;
             border: 0;
@@ -385,7 +383,7 @@
                                         <% } %>
 
                                             <div class="row g-4">
-                                                <!-- Sidebar -->
+
                                                 <div class="col-lg-3">
                                                     <div class="sidebar-card">
                                                         <img src="<%= user.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'User') + '&background=random' %>"
@@ -436,10 +434,8 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Main Content -->
                                                 <div class="col-lg-9">
 
-                                                    <!-- Profile Summary -->
                                                     <div class="main-content-card">
                                                         <div
                                                             class="d-flex justify-content-between align-items-center mb-4">
@@ -492,7 +488,6 @@
 
                                                     <div class="tab-content" id="profileTabContent">
 
-                                                        <!-- Bookings Tab -->
                                                         <div class="tab-pane fade show active" id="bookings-pane"
                                                             role="tabpanel" aria-labelledby="bookings-tab">
                                                             <h3 class="mb-4 fw-bold">Booking History</h3>
@@ -594,7 +589,6 @@
                                                                     <% } %>
                                                         </div>
 
-                                                        <!-- Saved PGs Tab -->
                                                         <div class="tab-pane fade" id="saved-pane" role="tabpanel"
                                                             aria-labelledby="saved-tab">
                                                             <h3 class="mb-4 fw-bold">Saved PGs</h3>
@@ -665,7 +659,6 @@
                                                                     <% } %>
                                                         </div>
 
-                                                        <!-- Payment Methods Tab -->
                                                         <div class="tab-pane fade" id="payment-pane" role="tabpanel"
                                                             aria-labelledby="payment-tab">
                                                             <h3 class="mb-4 fw-bold">Payment Methods</h3>
@@ -730,7 +723,6 @@
                                             </div>
     </div>
 
-    <!-- Edit Profile Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -810,7 +802,7 @@
                     "description": "Booking Payment",
                     "order_id": data.order.id,
                     "handler": async function (response) {
-                        // payment success, verify
+
                         const verifyRes = await fetch(`/bookings/${bookingId}/verify-payment`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -854,7 +846,6 @@
             }
         }
 
-        // Auto-open tab from hash
         document.addEventListener("DOMContentLoaded", function () {
             if (window.location.hash) {
                 const triggerEl = document.querySelector('button[data-bs-target="' + window.location.hash + '"]');
@@ -864,31 +855,28 @@
                 }
             }
 
-            // Update hash on click
             const tabBtns = document.querySelectorAll('button[data-bs-toggle="tab"]');
             tabBtns.forEach(btn => {
                 btn.addEventListener('shown.bs.tab', event => {
                     const target = event.target.getAttribute('data-bs-target');
                     history.replaceState(null, null, target);
 
-                    // Update sidebar styling
                     tabBtns.forEach(b => {
                         b.classList.remove('active');
                         if (b.querySelector('i')) {
                             b.querySelector('i').classList.remove('text-primary');
-                            // Simplified active state toggle for sidebar icons if needed
+
                         }
                     });
                     event.target.classList.add('active');
                 });
             });
 
-            // Profile Update Loading State
             const profileForm = document.querySelector('form[action="/profile"]');
             if (profileForm) {
                 profileForm.addEventListener('submit', function (e) {
                     const btn = this.querySelector('button[type="submit"]');
-                    // Prevent double submission if already detected
+
                     if (btn.disabled) {
                         e.preventDefault();
                         return;
