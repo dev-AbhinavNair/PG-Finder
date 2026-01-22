@@ -12,6 +12,14 @@ const Pg = require("../models/Pg");
 const Booking = require("../models/Booking");
 const Message = require("../models/Message");
 
+const toTitleCase = (str) => {
+  if (!str) return str;
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+};
+
+
 
 const cloudinary = require('../config/cloudinary');
 
@@ -65,7 +73,7 @@ router.get("/", requireAuth, requireOwner, async (req, res) => {
         startingPrice: pg.min_price || pg.max_price || 0,
         tags: [pg.gender || null, pg.food_included ? "Food included" : null].filter(Boolean),
         bookingsCount,
-        viewsCount: 0 
+        viewsCount: 0
       };
     }));
 
@@ -110,14 +118,14 @@ router.post("/pg", requireAuth, requireOwner, upload.array("photos", 8), async (
 
     await Pg.create({
       owner_id: req.user.userId,
-      name: req.body.name,
+      name: toTitleCase(req.body.name),
       short_tagline: req.body.short_tagline,
       description: req.body.description,
       long_description: req.body.long_description,
-      address_line: req.body.address_line,
-      area: req.body.area,
-      city: req.body.city,
-      state: req.body.state,
+      address_line: toTitleCase(req.body.address_line),
+      area: toTitleCase(req.body.area),
+      city: toTitleCase(req.body.city),
+      state: toTitleCase(req.body.state),
       pincode: req.body.pincode,
       gender: req.body.gender,
       food_included: req.body.food_included === "on",
@@ -188,14 +196,14 @@ router.post("/pg/:id/edit", requireAuth, requireOwner, upload.array("photos", 8)
     if (nextCover && !nextGallery.includes(nextCover)) nextCover = nextGallery[0] || null;
     if (!nextCover) nextCover = nextGallery[0] || null;
 
-    existing.name = req.body.name;
+    existing.name = toTitleCase(req.body.name);
     existing.short_tagline = req.body.short_tagline;
     existing.description = req.body.description;
     existing.long_description = req.body.long_description;
-    existing.address_line = req.body.address_line;
-    existing.area = req.body.area;
-    existing.city = req.body.city;
-    existing.state = req.body.state;
+    existing.address_line = toTitleCase(req.body.address_line);
+    existing.area = toTitleCase(req.body.area);
+    existing.city = toTitleCase(req.body.city);
+    existing.state = toTitleCase(req.body.state);
     existing.pincode = req.body.pincode;
     existing.gender = req.body.gender;
     existing.food_included = req.body.food_included === "on";

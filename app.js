@@ -42,8 +42,7 @@ app.use("/owner", ownerRouter);
 
 const seekerRouter = require("./router/seekerRouter");
 const seekerController = require("./controller/seekerController");
-app.use("/", seekerRouter); // Mount at root so paths are /pgs and /pgs/:id
-
+app.use("/", seekerRouter);
 
 app.get("/", (req, res) => {
   if (!req.user) {

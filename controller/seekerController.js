@@ -79,11 +79,11 @@ const renderHome = async (req, res) => {
             .sort("-createdAt");
 
         const popularAreas = [
-            "shimlapuri",
+            "Shimlapuri",
             "PuriShimla",
             "DianaLudhi",
             "Viman Nagar",
-            "ludhiana",
+            "Ludhiana",
             "Pimple Saudagar",
             "Aundh",
             "Magarpatta"
@@ -187,7 +187,7 @@ const postBooking = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        
+
         if (err.name === 'ValidationError') {
             const pg = await Pg.findById(req.params.pgId);
             return res.render("seeker/book", {
@@ -196,7 +196,7 @@ const postBooking = async (req, res) => {
                 error: err.message
             });
         }
-        
+
         res.status(500).render("errors/500", { message: "Error creating booking" });
     }
 };
@@ -400,9 +400,9 @@ const checkPgAvailability = async (req, res) => {
         const { check_in, check_out } = req.query;
 
         if (!check_in || !check_out) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "Check-in and check-out dates are required" 
+            return res.status(400).json({
+                success: false,
+                error: "Check-in and check-out dates are required"
             });
         }
 
@@ -413,25 +413,25 @@ const checkPgAvailability = async (req, res) => {
         const dateValidation = AvailabilityService.validateDateRange(checkInDate, checkOutDate);
 
         if (!dateValidation.isValid) {
-            return res.status(400).json({ 
-                success: false, 
-                error: dateValidation.errors.join(", ") 
+            return res.status(400).json({
+                success: false,
+                error: dateValidation.errors.join(", ")
             });
         }
 
         const isAvailable = await AvailabilityService.isPgAvailable(id, checkInDate, checkOutDate);
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             available: isAvailable,
             message: isAvailable ? "PG is available for selected dates" : "PG is not available for selected dates"
         });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ 
-            success: false, 
-            error: "Error checking availability" 
+        res.status(500).json({
+            success: false,
+            error: "Error checking availability"
         });
     }
 };

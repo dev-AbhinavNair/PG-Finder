@@ -4,9 +4,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
-    "update-bookings": "node scripts/update-booking-statuses.js",
-    "test-booking-system": "node scripts/test-booking-system.js"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
