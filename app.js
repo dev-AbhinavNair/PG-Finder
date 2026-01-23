@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/uploads", express.static("uploads"));
+app.use("/media", express.static("media"));
 
 function attachUser(req, res, next) {
   const token = req.cookies.token;
