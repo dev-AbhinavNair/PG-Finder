@@ -458,7 +458,7 @@
   </div>
 
   <script>
-    const bookingsData = <% - JSON.stringify(bookings) %>;
+    const bookingsData = <%- JSON.stringify(bookings) %>;
 
     function showBookingDetails(bookingId) {
       const booking = bookingsData.find(b => String(b._id) === String(bookingId));

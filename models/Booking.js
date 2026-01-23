@@ -26,8 +26,10 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
       validate: {
-        validator: function(value) {
-          return value > new Date();
+        validator: function (value) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return value >= today;
         },
         message: "Check-in date must be in the future"
       }
@@ -36,7 +38,7 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
       validate: {
-        validator: function(value) {
+        validator: function (value) {
           if (!this.check_in_date) return false;
           const minStay = 30;
           const minCheckOut = new Date(this.check_in_date);
@@ -64,7 +66,7 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-bookingSchema.statics.checkDateConflict = async function(pgId, checkInDate, checkOutDate, excludeBookingId = null) {
+bookingSchema.statics.checkDateConflict = async function (pgId, checkInDate, checkOutDate, excludeBookingId = null) {
   const query = {
     pg_id: pgId,
     booking_status: { $in: ["pending", "confirmed", "checked_in"] },
@@ -91,11 +93,11 @@ bookingSchema.statics.checkDateConflict = async function(pgId, checkInDate, chec
   return conflictingBookings.length > 0;
 };
 
-bookingSchema.methods.isDateRangeAvailable = async function(startDate, endDate) {
+bookingSchema.methods.isDateRangeAvailable = async function (startDate, endDate) {
   return !(await this.constructor.checkDateConflict(this.pg_id, startDate, endDate, this._id));
 };
 
-bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) {
+bookingSchema.statics.getBookedDates = async function (pgId, startDate, endDate) {
   const bookings = await this.find({
     pg_id: pgId,
     booking_status: { $in: ["pending", "confirmed", "checked_in"] },
@@ -121,7 +123,7 @@ bookingSchema.statics.getBookedDates = async function(pgId, startDate, endDate) 
   return bookedDates;
 };
 
-bookingSchema.pre('save', async function(next) {
+bookingSchema.pre('save', async function () {
   if (this.isNew && this.check_in_date && this.check_out_date) {
     const hasConflict = await this.constructor.checkDateConflict(
       this.pg_id,
@@ -132,10 +134,9 @@ bookingSchema.pre('save', async function(next) {
     if (hasConflict) {
       const error = new Error('PG is not available for the selected dates');
       error.name = 'ValidationError';
-      return next(error);
+      throw error;
     }
   }
-  next();
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);

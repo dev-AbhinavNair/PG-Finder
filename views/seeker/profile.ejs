@@ -369,358 +369,331 @@
                     </div>
                     <% } %>
 
-                        <% const urlParams=new URLSearchParams(typeof query !=='undefined' ? query : '' ); const
-                            successMsg=urlParams.get('success'); const errorMsg=urlParams.get('error'); %>
-                            <% if (successMsg) { %>
-                                <div class="alert alert-success mb-4 rounded-3">
-                                    <%= successMsg %>
+                        <div id="alertPlaceholder"></div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const params = new URLSearchParams(window.location.search);
+                                const success = params.get('success');
+                                const error = params.get('error');
+                                const placeholder = document.getElementById('alertPlaceholder');
+
+                                if (success) {
+                                    placeholder.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${success}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+                                }
+                                if (error) {
+                                    placeholder.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+                                }
+
+                                // Clean up URL without refresh
+                                if (success || error) {
+                                    const newUrl = window.location.pathname;
+                                    window.history.replaceState({}, '', newUrl);
+                                }
+                            });
+                        </script>
+
+                        <div class="row g-4">
+
+                            <div class="col-lg-3">
+                                <div class="sidebar-card">
+                                    <img src="<%= user.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'User') + '&background=random' %>"
+                                        alt="Profile" class="profile-avatar">
+                                    <div class="profile-name">
+                                        <%= user.name %>
+                                    </div>
+                                    <div class="profile-email">
+                                        <%= user.email %>
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary w-100 mb-4 rounded-3 btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                                    </button>
+
+                                    <div class="d-grid gap-1 nav-tabs-custom" id="profileTabs" role="tablist">
+                                        <button class="side-nav-btn active" id="bookings-tab" data-bs-toggle="tab"
+                                            data-bs-target="#bookings-pane" type="button" role="tab"
+                                            aria-controls="bookings-pane" aria-selected="true">
+                                            <i class="bi bi-calendar-check text-primary"></i> My
+                                            Bookings
+                                        </button>
+                                        <button class="side-nav-btn" id="saved-tab" data-bs-toggle="tab"
+                                            data-bs-target="#saved-pane" type="button" role="tab"
+                                            aria-controls="saved-pane" aria-selected="false">
+                                            <i class="bi bi-bookmark text-warning"></i> Saved PGs
+                                        </button>
+                                        <button class="side-nav-btn" id="payment-tab" data-bs-toggle="tab"
+                                            data-bs-target="#payment-pane" type="button" role="tab"
+                                            aria-controls="payment-pane" aria-selected="false">
+                                            <i class="bi bi-credit-card text-success"></i> Payment
+                                            Methods
+                                        </button>
+
+                                        <form action="/logout" method="POST" class="w-100 mt-2">
+                                            <button type="submit" class="side-nav-btn text-danger w-100">
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <% } %>
-                                    <% if (errorMsg) { %>
-                                        <div class="alert alert-danger mb-4 rounded-3">
-                                            <%= errorMsg %>
+                            </div>
+
+                            <div class="col-lg-9">
+
+                                <div class="main-content-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h2 class="card-title mb-0">Profile Summary</h2>
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                            data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit</button>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="info-row">
+                                                <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                                                <span class="info-value">
+                                                    <%= user.email %>
+                                                </span>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="info-label"><i class="bi bi-telephone"></i> Phone</span>
+                                                <span class="info-value">
+                                                    <%= user.phone %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-row">
+                                                <span class="info-label"><i class="bi bi-geo-alt"></i> Address</span>
+                                                <span class="info-value">
+                                                    <%= user.address || 'Not Provided' %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <% if (user.about) { %>
+                                        <div class="mt-4">
+                                            <div class="text-muted mb-2"><i class="bi bi-person-badge me-2"></i> About
+                                                Me
+                                            </div>
+                                            <p class="mb-0 text-dark">
+                                                <%= user.about %>
+                                            </p>
                                         </div>
                                         <% } %>
+                                </div>
 
+                                <div class="tab-content" id="profileTabContent">
+
+                                    <div class="tab-pane fade show active" id="bookings-pane" role="tabpanel"
+                                        aria-labelledby="bookings-tab">
+                                        <h3 class="mb-4 fw-bold">Booking History</h3>
+                                        <% if (bookings && bookings.length> 0) { %>
                                             <div class="row g-4">
+                                                <% bookings.forEach(booking=> { %>
+                                                    <div class="col-md-6">
+                                                        <div class="booking-card h-100">
+                                                            <div class="booking-img-wrap">
+                                                                <img src="<%= booking.pg_id && booking.pg_id.cover_image ? booking.pg_id.cover_image : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' %>"
+                                                                    class="booking-img" alt="PG Image">
 
-                                                <div class="col-lg-3">
-                                                    <div class="sidebar-card">
-                                                        <img src="<%= user.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'User') + '&background=random' %>"
-                                                            alt="Profile" class="profile-avatar">
-                                                        <div class="profile-name">
-                                                            <%= user.name %>
-                                                        </div>
-                                                        <div class="profile-email">
-                                                            <%= user.email %>
-                                                        </div>
+                                                                <div class="position-absolute bottom-0 start-0 w-100 p-3"
+                                                                    style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                                                    <h5 class="text-white mb-0 fw-bold">
+                                                                        <%= booking.pg_name %>
+                                                                    </h5>
+                                                                </div>
+                                                            </div>
+                                                            <div class="booking-content">
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-start mb-2">
+                                                                    <div class="booking-pg-loc mb-0">
+                                                                        <i class="bi bi-geo-alt-fill"></i>
+                                                                        <%= booking.pg_id && booking.pg_id.city ?
+                                                                            booking.pg_id.city : 'Location Unavailable'
+                                                                            %>
+                                                                    </div>
+                                                                    <div class="price-tag">₹<%= booking.monthly_rent ?
+                                                                            booking.monthly_rent.toLocaleString()
+                                                                            : 'N/A' %>
+                                                                    </div>
+                                                                </div>
 
-                                                        <button type="button"
-                                                            class="btn btn-primary w-100 mb-4 rounded-3 btn-sm"
-                                                            data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                                            <i class="bi bi-pencil-square me-2"></i>Edit Profile
-                                                        </button>
-
-                                                        <div class="d-grid gap-1 nav-tabs-custom" id="profileTabs"
-                                                            role="tablist">
-                                                            <button class="side-nav-btn active" id="bookings-tab"
-                                                                data-bs-toggle="tab" data-bs-target="#bookings-pane"
-                                                                type="button" role="tab" aria-controls="bookings-pane"
-                                                                aria-selected="true">
-                                                                <i class="bi bi-calendar-check text-primary"></i> My
-                                                                Bookings
-                                                            </button>
-                                                            <button class="side-nav-btn" id="saved-tab"
-                                                                data-bs-toggle="tab" data-bs-target="#saved-pane"
-                                                                type="button" role="tab" aria-controls="saved-pane"
-                                                                aria-selected="false">
-                                                                <i class="bi bi-bookmark text-warning"></i> Saved PGs
-                                                            </button>
-                                                            <button class="side-nav-btn" id="payment-tab"
-                                                                data-bs-toggle="tab" data-bs-target="#payment-pane"
-                                                                type="button" role="tab" aria-controls="payment-pane"
-                                                                aria-selected="false">
-                                                                <i class="bi bi-credit-card text-success"></i> Payment
-                                                                Methods
-                                                            </button>
-
-                                                            <form action="/logout" method="POST" class="w-100 mt-2">
-                                                                <button type="submit"
-                                                                    class="side-nav-btn text-danger w-100">
-                                                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-9">
-
-                                                    <div class="main-content-card">
-                                                        <div
-                                                            class="d-flex justify-content-between align-items-center mb-4">
-                                                            <h2 class="card-title mb-0">Profile Summary</h2>
-                                                            <button
-                                                                class="btn btn-sm btn-outline-primary rounded-pill px-3"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#editProfileModal">Edit</button>
-                                                        </div>
-
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="info-row">
-                                                                    <span class="info-label"><i
-                                                                            class="bi bi-envelope"></i> Email</span>
-                                                                    <span class="info-value">
-                                                                        <%= user.email %>
+                                                                <div class="d-flex align-items-center gap-2 mb-3">
+                                                                    <span
+                                                                        class="status-badge status-<%= booking.booking_status %>">
+                                                                        <%= booking.booking_status %>
+                                                                    </span>
+                                                                    <span class="text-muted small">
+                                                                        <i class="bi bi-calendar-event me-1"></i>
+                                                                        <%= new
+                                                                            Date(booking.check_in_date).toLocaleDateString('en-GB',
+                                                                            { day: '2-digit' , month: '2-digit' ,
+                                                                            year: '2-digit' }) %>
+                                                                            <% if(booking.check_out_date) { %> - <%= new
+                                                                                    Date(booking.check_out_date).toLocaleDateString('en-GB',
+                                                                                    { day: '2-digit' , month: '2-digit'
+                                                                                    , year: '2-digit' }) %>
+                                                                                    <% } else { %>
+                                                                                        (Check-in)<% } %>
                                                                     </span>
                                                                 </div>
-                                                                <div class="info-row">
-                                                                    <span class="info-label"><i
-                                                                            class="bi bi-telephone"></i> Phone</span>
-                                                                    <span class="info-value">
-                                                                        <%= user.phone %>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="info-row">
-                                                                    <span class="info-label"><i
-                                                                            class="bi bi-geo-alt"></i> Address</span>
-                                                                    <span class="info-value">
-                                                                        <%= user.address || 'Not Provided' %>
-                                                                    </span>
+
+                                                                <div class="d-flex gap-2">
+                                                                    <a href="/pgs/<%= booking.pg_id ? booking.pg_id._id : '#' %>"
+                                                                        class="btn btn-outline-primary btn-sm flex-grow-1">View
+                                                                        Details</a>
+                                                                    <% if (booking.booking_status==='pending' ) { %>
+                                                                        <button
+                                                                            onclick="initiatePayment('<%= booking._id %>')"
+                                                                            class="btn btn-success btn-sm flex-grow-1">Pay
+                                                                            Now</button>
+                                                                        <% } %>
                                                                 </div>
                                                             </div>
                                                         </div>
-
-                                                        <% if (user.about) { %>
-                                                            <div class="mt-4">
-                                                                <div class="text-muted mb-2"><i
-                                                                        class="bi bi-person-badge me-2"></i> About Me
-                                                                </div>
-                                                                <p class="mb-0 text-dark">
-                                                                    <%= user.about %>
-                                                                </p>
-                                                            </div>
-                                                            <% } %>
                                                     </div>
-
-                                                    <div class="tab-content" id="profileTabContent">
-
-                                                        <div class="tab-pane fade show active" id="bookings-pane"
-                                                            role="tabpanel" aria-labelledby="bookings-tab">
-                                                            <h3 class="mb-4 fw-bold">Booking History</h3>
-                                                            <% if (bookings && bookings.length> 0) { %>
-                                                                <div class="row g-4">
-                                                                    <% bookings.forEach(booking=> { %>
-                                                                        <div class="col-md-6">
-                                                                            <div class="booking-card h-100">
-                                                                                <div class="booking-img-wrap">
-                                                                                    <img src="<%= booking.pg_id && booking.pg_id.cover_image ? booking.pg_id.cover_image : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' %>"
-                                                                                        class="booking-img"
-                                                                                        alt="PG Image">
-
-                                                                                    <div class="position-absolute bottom-0 start-0 w-100 p-3"
-                                                                                        style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
-                                                                                        <h5
-                                                                                            class="text-white mb-0 fw-bold">
-                                                                                            <%= booking.pg_name %>
-                                                                                        </h5>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="booking-content">
-                                                                                    <div
-                                                                                        class="d-flex justify-content-between align-items-start mb-2">
-                                                                                        <div
-                                                                                            class="booking-pg-loc mb-0">
-                                                                                            <i
-                                                                                                class="bi bi-geo-alt-fill"></i>
-                                                                                            <%= booking.pg_id &&
-                                                                                                booking.pg_id.city ?
-                                                                                                booking.pg_id.city
-                                                                                                : 'Location Unavailable'
-                                                                                                %>
-                                                                                        </div>
-                                                                                        <div class="price-tag">₹<%=
-                                                                                                booking.monthly_rent ?
-                                                                                                booking.monthly_rent.toLocaleString()
-                                                                                                : 'N/A' %>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <div
-                                                                                        class="d-flex align-items-center gap-2 mb-3">
-                                                                                        <span
-                                                                                            class="status-badge status-<%= booking.booking_status %>">
-                                                                                            <%= booking.booking_status
-                                                                                                %>
-                                                                                        </span>
-                                                                                        <span class="text-muted small">
-                                                                                            <i
-                                                                                                class="bi bi-calendar-event me-1"></i>
-                                                                                            <%= new
-                                                                                                Date(booking.check_in_date).toLocaleDateString('en-GB',
-                                                                                                { day: '2-digit' ,
-                                                                                                month: '2-digit' ,
-                                                                                                year: '2-digit' }) %>
-                                                                                                <% if(booking.check_out_date)
-                                                                                                    { %> - <%= new
-                                                                                                        Date(booking.check_out_date).toLocaleDateString('en-GB',
-                                                                                                        { day: '2-digit'
-                                                                                                        ,
-                                                                                                        month: '2-digit'
-                                                                                                        ,
-                                                                                                        year: '2-digit'
-                                                                                                        }) %>
-                                                                                                        <% } else { %>
-                                                                                                            (Check-in)<%
-                                                                                                                } %>
-                                                                                        </span>
-                                                                                    </div>
-
-                                                                                    <div class="d-flex gap-2">
-                                                                                        <a href="/pgs/<%= booking.pg_id ? booking.pg_id._id : '#' %>"
-                                                                                            class="btn btn-outline-primary btn-sm flex-grow-1">View
-                                                                                            Details</a>
-                                                                                        <% if
-                                                                                            (booking.booking_status==='pending'
-                                                                                            ) { %>
-                                                                                            <button
-                                                                                                onclick="initiatePayment('<%= booking._id %>')"
-                                                                                                class="btn btn-success btn-sm flex-grow-1">Pay
-                                                                                                Now</button>
-                                                                                            <% } %>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <% }) %>
-                                                                </div>
-                                                                <% } else { %>
-                                                                    <div class="empty-state">
-                                                                        <i class="bi bi-journal-x empty-icon"></i>
-                                                                        <h5>No bookings found</h5>
-                                                                        <p class="empty-text">You haven't made any
-                                                                            bookings yet.</p>
-                                                                        <a href="/pgs" class="btn btn-primary">Browse
-                                                                            PGs</a>
-                                                                    </div>
-                                                                    <% } %>
-                                                        </div>
-
-                                                        <div class="tab-pane fade" id="saved-pane" role="tabpanel"
-                                                            aria-labelledby="saved-tab">
-                                                            <h3 class="mb-4 fw-bold">Saved PGs</h3>
-                                                            <% if (savedPgs && savedPgs.length> 0) { %>
-                                                                <div class="row g-4">
-                                                                    <% savedPgs.forEach(pg=> { %>
-                                                                        <div class="col-md-6 col-lg-6">
-                                                                            <div class="booking-card h-100">
-                                                                                <div class="booking-img-wrap">
-                                                                                    <img src="<%= pg.cover_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' %>"
-                                                                                        class="booking-img"
-                                                                                        alt="PG Image">
-                                                                                    <div
-                                                                                        class="position-absolute top-0 end-0 p-3">
-                                                                                        <form
-                                                                                            action="/pgs/<%= pg._id %>/save"
-                                                                                            method="POST">
-                                                                                            <button
-                                                                                                class="btn btn-sm btn-light rounded-circle shadow-sm text-danger border-0">
-                                                                                                <i
-                                                                                                    class="bi bi-heart-fill"></i>
-                                                                                            </button>
-                                                                                        </form>
-                                                                                    </div>
-                                                                                    <div class="position-absolute bottom-0 start-0 w-100 p-3"
-                                                                                        style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
-                                                                                        <h5
-                                                                                            class="text-white mb-0 fw-bold">
-                                                                                            <%= pg.name %>
-                                                                                        </h5>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="booking-content">
-                                                                                    <div class="booking-pg-loc">
-                                                                                        <i
-                                                                                            class="bi bi-geo-alt-fill"></i>
-                                                                                        <%= pg.area %>, <%= pg.city %>
-                                                                                    </div>
-                                                                                    <p class="text-muted small mb-3">
-                                                                                        <%= pg.address_line %>
-                                                                                    </p>
-
-                                                                                    <div
-                                                                                        class="d-flex justify-content-between align-items-end">
-                                                                                        <div class="price-tag">₹<%=
-                                                                                                pg.min_price ?
-                                                                                                pg.min_price.toLocaleString()
-                                                                                                : 'N/A' %><span
-                                                                                                    class="fw-normal text-muted fs-6">/mo</span>
-                                                                                        </div>
-                                                                                        <a href="/pgs/<%= pg._id %>"
-                                                                                            class="btn btn-primary btn-sm rounded-pill px-3">View</a>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <% }) %>
-                                                                </div>
-                                                                <% } else { %>
-                                                                    <div class="empty-state">
-                                                                        <i class="bi bi-heart empty-icon"></i>
-                                                                        <h5>No saved PGs</h5>
-                                                                        <p class="empty-text">You haven't saved any PGs
-                                                                            yet.</p>
-                                                                        <a href="/pgs" class="btn btn-primary">Browse
-                                                                            PGs</a>
-                                                                    </div>
-                                                                    <% } %>
-                                                        </div>
-
-                                                        <div class="tab-pane fade" id="payment-pane" role="tabpanel"
-                                                            aria-labelledby="payment-tab">
-                                                            <h3 class="mb-4 fw-bold">Payment Methods</h3>
-
-                                                            <div class="main-content-card">
-                                                                <form action="/profile/payment-methods" method="POST">
-                                                                    <div class="row g-3">
-                                                                        <div class="col-12">
-                                                                            <h5 class="mb-3">Bank Account Details</h5>
-                                                                            <p class="text-muted small">This is used for
-                                                                                refunds or payouts (if applicable).</p>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label class="form-label">Account Holder
-                                                                                Name</label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="account_holder"
-                                                                                value="<%= user.bank_account_holder || '' %>">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label class="form-label">Bank Name</label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="bank_name"
-                                                                                value="<%= user.bank_name || '' %>">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label class="form-label">Account
-                                                                                Number</label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="account_number"
-                                                                                value="<%= user.bank_account_number || '' %>">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label class="form-label">IFSC Code</label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="ifsc_code"
-                                                                                value="<%= user.bank_ifsc_code || '' %>">
-                                                                        </div>
-                                                                        <div class="col-12 mt-4">
-                                                                            <h5 class="mb-3">UPI ID</h5>
-                                                                        </div>
-                                                                        <div class="col-md-12">
-                                                                            <label class="form-label">UPI ID (e.g.
-                                                                                name@upi)</label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="upi_id"
-                                                                                value="<%= user.upi_id || '' %>">
-                                                                        </div>
-
-                                                                        <div class="col-12 mt-4 text-end">
-                                                                            <button type="submit"
-                                                                                class="btn btn-primary px-4 rounded-pill">Save
-                                                                                Details</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
+                                                    <% }) %>
                                             </div>
+                                            <% } else { %>
+                                                <div class="empty-state">
+                                                    <i class="bi bi-journal-x empty-icon"></i>
+                                                    <h5>No bookings found</h5>
+                                                    <p class="empty-text">You haven't made any
+                                                        bookings yet.</p>
+                                                    <a href="/pgs" class="btn btn-primary">Browse
+                                                        PGs</a>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="saved-pane" role="tabpanel"
+                                        aria-labelledby="saved-tab">
+                                        <h3 class="mb-4 fw-bold">Saved PGs</h3>
+                                        <% if (savedPgs && savedPgs.length> 0) { %>
+                                            <div class="row g-4">
+                                                <% savedPgs.forEach(pg=> { %>
+                                                    <div class="col-md-6 col-lg-6">
+                                                        <div class="booking-card h-100">
+                                                            <div class="booking-img-wrap">
+                                                                <img src="<%= pg.cover_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' %>"
+                                                                    class="booking-img" alt="PG Image">
+                                                                <div class="position-absolute top-0 end-0 p-3">
+                                                                    <form action="/pgs/<%= pg._id %>/save"
+                                                                        method="POST">
+                                                                        <button
+                                                                            class="btn btn-sm btn-light rounded-circle shadow-sm text-danger border-0">
+                                                                            <i class="bi bi-heart-fill"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                                <div class="position-absolute bottom-0 start-0 w-100 p-3"
+                                                                    style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                                                    <h5 class="text-white mb-0 fw-bold">
+                                                                        <%= pg.name %>
+                                                                    </h5>
+                                                                </div>
+                                                            </div>
+                                                            <div class="booking-content">
+                                                                <div class="booking-pg-loc">
+                                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                                    <%= pg.area %>, <%= pg.city %>
+                                                                </div>
+                                                                <p class="text-muted small mb-3">
+                                                                    <%= pg.address_line %>
+                                                                </p>
+
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-end">
+                                                                    <div class="price-tag">₹<%= pg.min_price ?
+                                                                            pg.min_price.toLocaleString() : 'N/A' %>
+                                                                            <span
+                                                                                class="fw-normal text-muted fs-6">/mo</span>
+                                                                    </div>
+                                                                    <a href="/pgs/<%= pg._id %>"
+                                                                        class="btn btn-primary btn-sm rounded-pill px-3">View</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% }) %>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="empty-state">
+                                                    <i class="bi bi-heart empty-icon"></i>
+                                                    <h5>No saved PGs</h5>
+                                                    <p class="empty-text">You haven't saved any PGs
+                                                        yet.</p>
+                                                    <a href="/pgs" class="btn btn-primary">Browse
+                                                        PGs</a>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="payment-pane" role="tabpanel"
+                                        aria-labelledby="payment-tab">
+                                        <h3 class="mb-4 fw-bold">Payment Methods</h3>
+
+                                        <div class="main-content-card">
+                                            <form action="/profile/payment-methods" method="POST">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <h5 class="mb-3">Bank Account Details</h5>
+                                                        <p class="text-muted small">This is used for
+                                                            refunds or payouts (if applicable).</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Account Holder
+                                                            Name</label>
+                                                        <input type="text" class="form-control" name="account_holder"
+                                                            value="<%= user.bank_account_holder || '' %>">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Bank Name</label>
+                                                        <input type="text" class="form-control" name="bank_name"
+                                                            value="<%= user.bank_name || '' %>">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Account
+                                                            Number</label>
+                                                        <input type="text" class="form-control" name="account_number"
+                                                            value="<%= user.bank_account_number || '' %>">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">IFSC Code</label>
+                                                        <input type="text" class="form-control" name="ifsc_code"
+                                                            value="<%= user.bank_ifsc_code || '' %>">
+                                                    </div>
+                                                    <div class="col-12 mt-4">
+                                                        <h5 class="mb-3">UPI ID</h5>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <label class="form-label">UPI ID (e.g.
+                                                            name@upi)</label>
+                                                        <input type="text" class="form-control" name="upi_id"
+                                                            value="<%= user.upi_id || '' %>">
+                                                    </div>
+
+                                                    <div class="col-12 mt-4 text-end">
+                                                        <button type="submit"
+                                                            class="btn btn-primary px-4 rounded-pill">Save
+                                                            Details</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
     </div>
 
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">

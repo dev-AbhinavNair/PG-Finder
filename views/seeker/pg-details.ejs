@@ -293,6 +293,33 @@
     </nav>
 
     <div class="container py-4">
+        <div id="alertPlaceholder"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const params = new URLSearchParams(window.location.search);
+                const success = params.get('success');
+                const error = params.get('error');
+                const placeholder = document.getElementById('alertPlaceholder');
+
+                if (success) {
+                    placeholder.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ${success}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+                }
+                if (error) {
+                    placeholder.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${error}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+                }
+
+                if (success || error) {
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, '', newUrl);
+                }
+            });
+        </script>
         <div class="gallery-container">
             <% var allImages=[]; if (pg.cover_url) allImages.push(pg.cover_url); if (pg.gallery_urls &&
                 pg.gallery_urls.length> 0) {

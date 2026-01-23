@@ -182,7 +182,7 @@ const postBooking = async (req, res) => {
             booking_status: "pending"
         });
 
-        res.redirect("/pgs?booking=success");
+        res.redirect("/profile?success=Booking confirmed! Please complete the payment.");
 
     } catch (err) {
         console.error(err);

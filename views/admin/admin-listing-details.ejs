@@ -562,9 +562,8 @@
                 </div>
 
                 <% const cover=listing.cover_url ? [listing.cover_url] : []; const
-                  gallery=Array.isArray(listing.gallery_urls) ? listing.gallery_urls : [];
-                  if cover is also in gallery) const photos=[...cover, ...gallery.filter(u=> u && u !==
-                  listing.cover_url)];
+                  gallery=Array.isArray(listing.gallery_urls) ? listing.gallery_urls : []; const photos=[...cover,
+                  ...gallery.filter(u=> u && u !== listing.cover_url)];
                   %>
 
                   <div class="card-section">
