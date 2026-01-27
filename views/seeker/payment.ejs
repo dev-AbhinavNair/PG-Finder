@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Processing Payment...</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+<script>
+(async function () {
+  const res = await fetch("/bookings/<%= booking._id %>/create-order", {
+    method: "POST"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert("Failed to create payment order");
+    window.location.href = "/profile";
+    return;
+  }
+
+  const options = {
+    key: data.key,
+    amount: data.order.amount,
+    currency: "INR",
+    name: "FindMyPG",
+    description: "Booking Payment",
+    order_id: data.order.id,
+    handler: async function (response) {
+      const verify = await fetch("/bookings/<%= booking._id %>/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(response)
+      });
+
+      const result = await verify.json();
+      if (result.success) {
+        window.location.href = "/profile?success=Payment completed";
+      } else {
+        alert("Payment verification failed");
+        window.location.href = "/profile?error=Payment failed";
+      }
+    },
+    prefill: {
+      name: "<%= user.name %>",
+      email: "<%= user.email %>",
+      contact: "<%= user.phone %>"
+    },
+    theme: { color: "#2563eb" }
+  };
+
+  new Razorpay(options).open();
+})();
+</script>
+
+</body>
+</html>

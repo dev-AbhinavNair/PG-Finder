@@ -36,4 +36,6 @@ router.post("/bookings/:id/verify-payment", requireAuth, seekerController.verify
 
 router.get("/api/pgs/:id/availability", seekerController.checkPgAvailability);
 
+router.get("/bookings/:id/pay",requireAuth,seekerController.renderPaymentPage);
+
 module.exports = router;

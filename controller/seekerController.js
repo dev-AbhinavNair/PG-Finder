@@ -168,7 +168,7 @@ const postBooking = async (req, res) => {
             });
         }
 
-        await Booking.create({
+        const booking = await Booking.create({
             pg_id: pg._id,
             owner_id: pg.owner_id,
             tenant_id: req.user.userId || req.user._id,
@@ -182,7 +182,7 @@ const postBooking = async (req, res) => {
             booking_status: "pending"
         });
 
-        res.redirect("/profile?success=Booking confirmed! Please complete the payment.");
+        res.redirect(`/bookings/${booking._id}/pay`);
 
     } catch (err) {
         console.error(err);
@@ -434,6 +434,25 @@ const checkPgAvailability = async (req, res) => {
     }
 };
 
+const renderPaymentPage = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.redirect("/profile?error=Booking not found");
+        }
+
+        res.render("seeker/payment", {
+            booking,
+            user: req.user
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect("/profile?error=Unable to start payment");
+    }
+};
+
+
 module.exports = {
     getSearchResults,
     getPgDetails,
@@ -447,5 +466,6 @@ module.exports = {
     reportPg,
     createOrder,
     verifyPayment,
-    checkPgAvailability
+    checkPgAvailability,
+    renderPaymentPage
 };
