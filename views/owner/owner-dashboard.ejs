@@ -361,14 +361,17 @@
 
                       <div class="meta-row">
                         <span>
-                          <%= pg.bookingsCount || 0 %> Bookings
+                          <i class="bi bi-calendar-check"></i> <%= pg.bookingsCount || 0 %> Bookings
                         </span>
                         <span>
-                          <%= pg.viewsCount || 0 %> Views
+                          <%= pg.totalRevenue ? '₹' + pg.totalRevenue.toLocaleString('en-IN') : '₹0' %> Revenue
                         </span>
                       </div>
 
                       <div class="d-flex align-items-center justify-content-end gap-2 mt-3">
+                        <a class="btn btn-primary btn-sm" href="/owner/pg/<%= pg._id %>/details">
+                          <i class="bi bi-eye"></i> Details
+                        </a>
                         <a class="btn btn-outline-secondary btn-sm" href="/owner/pg/<%= pg._id %>/edit">Edit</a>
                       </div>
                     </div>

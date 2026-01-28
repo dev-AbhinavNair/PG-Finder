@@ -75,6 +75,4 @@ router.post("/payouts/:payoutId/process", requireAuth, requireAdmin, adminContro
 
 router.post("/payouts/process-bulk", requireAuth, requireAdmin, adminController.processBulkPayouts);
 
-// router.get("/payments/:paymentId", requireAuth, requireAdmin, adminController.getPaymentDetails);
-
 module.exports = router;

@@ -11,6 +11,7 @@ router.get("/pg/new", requireAuth, requireOwner, ownerController.getAddPgForm);
 router.post("/pg", requireAuth, requireOwner, ownerController.upload.array("photos", 8), ownerController.createPg);
 
 router.get("/pg/:id/edit", requireAuth, requireOwner, ownerController.getEditPgForm);
+router.get("/pg/:id/details", requireAuth, requireOwner, ownerController.getPgDetails);
 
 router.post("/pg/:id/edit", requireAuth, requireOwner, ownerController.upload.array("photos", 8), ownerController.updatePg);
 

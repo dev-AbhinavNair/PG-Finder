@@ -59,12 +59,18 @@ const getDashboard = async (req, res) => {
 
     const pgs = await Promise.all(rawPgs.map(async (pg) => {
       const bookingsCount = await Booking.countDocuments({ pg_id: pg._id });
+      
+      const Payment = require("../models/Payment");
+      const payments = await Payment.find({ listing_id: pg._id, status: "success" }).lean();
+      const totalRevenue = payments.reduce((sum, p) => sum + (p.owner_amount || 0), 0);
+      
       return {
         ...pg,
         coverUrl: pg.cover_url || null,
         startingPrice: pg.min_price || pg.max_price || 0,
         tags: [pg.gender || null, pg.food_included ? "Food included" : null].filter(Boolean),
         bookingsCount,
+        totalRevenue,
         viewsCount: 0
       };
     }));
@@ -153,6 +159,146 @@ const getEditPgForm = async (req, res) => {
   } catch (err) {
     console.error("Edit page error:", err);
     return res.status(500).render("errors/500", { message: "Failed to load edit page" });
+  }
+};
+
+const getPgDetails = async (req, res) => {
+  try {
+    const owner = await User.findById(req.user.userId);
+    const pg = await Pg.findOne({ _id: req.params.id, owner_id: req.user.userId }).lean();
+
+    if (!pg) return res.status(404).render("errors/404", { message: "PG not found" });
+
+    const bookings = await Booking.find({ pg_id: pg._id })
+      .populate('tenant_id', 'name avatar_url phone email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const Payment = require("../models/Payment");
+    const payments = await Payment.find({ listing_id: pg._id, status: "success" })
+      .populate('user_id', 'name avatar_url phone email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const totalBookings = bookings.length;
+    const totalRevenue = payments.reduce((sum, p) => sum + (p.owner_amount || 0), 0);
+    const completedBookings = bookings.filter(b => b.booking_status === 'completed').length;
+    const activeBookings = bookings.filter(b => ['confirmed', 'checked_in'].includes(b.booking_status)).length;
+    const pendingBookings = bookings.filter(b => b.booking_status === 'pending').length;
+
+    const monthlyRevenue = {};
+    const currentYear = new Date().getFullYear();
+    payments.forEach(payment => {
+      const paymentDate = new Date(payment.createdAt);
+      const monthKey = `${paymentDate.getFullYear()}-${paymentDate.getMonth() + 1}`;
+      if (!monthlyRevenue[monthKey]) {
+        monthlyRevenue[monthKey] = 0;
+      }
+      monthlyRevenue[monthKey] += payment.owner_amount || 0;
+    });
+
+    const recentActivity = [];
+    
+    bookings.slice(0, 5).forEach(booking => {
+      recentActivity.push({
+        type: 'booking',
+        id: booking._id,
+        description: `New booking from ${booking.tenant_id?.name || booking.tenant_name}`,
+        status: booking.booking_status,
+        amount: booking.monthly_rent,
+        date: booking.createdAt,
+        icon: 'bi-calendar-check'
+      });
+    });
+
+    payments.slice(0, 5).forEach(payment => {
+      recentActivity.push({
+        type: 'payment',
+        id: payment._id,
+        description: `Payment received from ${payment.user_id?.name}`,
+        status: payment.status,
+        amount: payment.owner_amount,
+        date: payment.createdAt,
+        icon: 'bi-credit-card'
+      });
+    });
+
+    recentActivity.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const bookingDetails = bookings.map(booking => ({
+      _id: booking._id,
+      tenantName: booking.tenant_id?.name || booking.tenant_name,
+      tenantAvatar: booking.tenant_id?.avatar_url || booking.tenant_avatar,
+      tenantPhone: booking.tenant_id?.phone || booking.tenant_contact,
+      tenantEmail: booking.tenant_id?.email,
+      checkInDate: booking.check_in_date,
+      checkOutDate: booking.check_out_date,
+      monthlyRent: booking.monthly_rent,
+      roomType: booking.room_type,
+      bookingStatus: booking.booking_status,
+      paymentStatus: booking.payment_status,
+      createdAt: booking.createdAt,
+      notes: booking.tenant_notes || booking.owner_notes
+    }));
+
+    const paymentDetails = payments.map(payment => ({
+      _id: payment._id,
+      transactionId: payment.transaction_id,
+      userName: payment.user_id?.name || 'Unknown',
+      userAvatar: payment.user_id?.avatar_url,
+      amount: payment.amount,
+      ownerAmount: payment.owner_amount,
+      platformFee: payment.platform_fee,
+      commissionRate: payment.commission_rate,
+      method: payment.method,
+      status: payment.status,
+      payoutStatus: payment.payout_status,
+      createdAt: payment.createdAt
+    }));
+
+    const pgData = {
+      ...pg,
+      coverUrl: pg.cover_url,
+      galleryUrls: pg.gallery_urls || [],
+      amenities: pg.amenities || [],
+      minPrice: pg.min_price,
+      maxPrice: pg.max_price,
+      foodIncluded: pg.food_included,
+      addressLine: pg.address_line,
+      pincode: pg.pincode,
+      tags: [pg.gender, pg.food_included ? "Food included" : null].filter(Boolean),
+      createdAtFormatted: new Date(pg.createdAt).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }),
+      lastUpdatedFormatted: new Date(pg.updatedAt).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    };
+
+    return res.render("owner/pg-details", {
+      owner,
+      pg: pgData,
+      bookings: bookingDetails,
+      payments: paymentDetails,
+      stats: {
+        totalBookings,
+        totalRevenue,
+        completedBookings,
+        activeBookings,
+        pendingBookings,
+        averageRating: 0,
+        occupancyRate: totalBookings > 0 ? ((completedBookings / totalBookings) * 100).toFixed(1) : 0
+      },
+      monthlyRevenue,
+      recentActivity: recentActivity.slice(0, 10)
+    });
+  } catch (err) {
+    console.error("PG details error:", err);
+    return res.status(500).render("errors/500", { message: "Failed to load PG details" });
   }
 };
 
@@ -626,6 +772,7 @@ module.exports = {
   getAddPgForm,
   createPg,
   getEditPgForm,
+  getPgDetails,
   updatePg,
   deletePg,
   getBookings,
