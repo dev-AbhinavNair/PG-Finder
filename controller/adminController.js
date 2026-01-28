@@ -3,96 +3,98 @@ const User = require("../models/User");
 
 const Report = require("../models/Report");
 
-exports.getListings = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page || "1", 10);
-    const limit = 10;
-    const skip = (page - 1) * limit;
-    const q = req.query.q || "";
+const Payment = require("../models/Payment");
 
-    const filter = { status: "pending_approval" };
-    if (q) {
-      filter.$or = [
-        { name: { $regex: q, $options: "i" } },
-        { area: { $regex: q, $options: "i" } },
-        { city: { $regex: q, $options: "i" } },
-      ];
-    }
+// exports.getListings = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page || "1", 10);
+//     const limit = 10;
+//     const skip = (page - 1) * limit;
+//     const q = req.query.q || "";
 
-    const [listings, totalCount, pendingCount, todayCount] = await Promise.all([
-      Pg.find(filter)
-        .populate("owner_id", "name phone")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Pg.countDocuments(filter),
-      Pg.countDocuments({ status: "pending_approval" }),
-      Pg.countDocuments({
-        status: "pending_approval",
-        createdAt: {
-          $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          $lt: new Date(new Date().setHours(23, 59, 59, 999)),
-        },
-      }),
-    ]);
+//     const filter = { status: "pending_approval" };
+//     if (q) {
+//       filter.$or = [
+//         { name: { $regex: q, $options: "i" } },
+//         { area: { $regex: q, $options: "i" } },
+//         { city: { $regex: q, $options: "i" } },
+//       ];
+//     }
 
-    const totalApproved = await Pg.countDocuments({ status: "published" });
+//     const [listings, totalCount, pendingCount, todayCount] = await Promise.all([
+//       Pg.find(filter)
+//         .populate("owner_id", "name phone")
+//         .sort({ createdAt: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean(),
+//       Pg.countDocuments(filter),
+//       Pg.countDocuments({ status: "pending_approval" }),
+//       Pg.countDocuments({
+//         status: "pending_approval",
+//         createdAt: {
+//           $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+//           $lt: new Date(new Date().setHours(23, 59, 59, 999)),
+//         },
+//       }),
+//     ]);
 
-    const mappedListings = listings.map((pg) => ({
-      _id: pg._id,
-      name: pg.name,
-      coverUrl: null,
-      category: pg.short_tagline || "",
-      ownerName: pg.owner_id?.name || "Unknown",
-      ownerPhone: pg.owner_id?.phone || "",
-      area: pg.area,
-      city: pg.city,
-      submittedAtFormatted: pg.createdAt
-        ? pg.createdAt.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
-        : "",
-      tags: [pg.gender, pg.food_included ? "Food included" : null].filter(
-        Boolean
-      ),
-      status: pg.status === "pending_approval" ? "pending" : pg.status,
-    }));
+//     const totalApproved = await Pg.countDocuments({ status: "published" });
 
-    const stats = {
-      pending: pendingCount,
-      today: todayCount,
-      issues: 0,
-      totalApproved,
-    };
+//     const mappedListings = listings.map((pg) => ({
+//       _id: pg._id,
+//       name: pg.name,
+//       coverUrl: null,
+//       category: pg.short_tagline || "",
+//       ownerName: pg.owner_id?.name || "Unknown",
+//       ownerPhone: pg.owner_id?.phone || "",
+//       area: pg.area,
+//       city: pg.city,
+//       submittedAtFormatted: pg.createdAt
+//         ? pg.createdAt.toLocaleDateString("en-IN", {
+//           day: "2-digit",
+//           month: "short",
+//           year: "numeric",
+//         })
+//         : "",
+//       tags: [pg.gender, pg.food_included ? "Food included" : null].filter(
+//         Boolean
+//       ),
+//       status: pg.status === "pending_approval" ? "pending" : pg.status,
+//     }));
 
-    const admin = await User.findById(req.user.userId).select("name avatar_url");
+//     const stats = {
+//       pending: pendingCount,
+//       today: todayCount,
+//       issues: 0,
+//       totalApproved,
+//     };
 
-    res.render("admin/admin-listings", {
-      admin,
-      stats,
-      listings: mappedListings,
-      page,
-      totalPages: Math.ceil(totalCount / limit) || 1,
-      q,
-      selectedCount: 0,
-    });
-  } catch (err) {
-    console.error("Admin listings error:", err);
-    res.status(500).render("admin/admin-listings", {
-      admin: null,
-      stats: { pending: 0, today: 0, issues: 0, totalApproved: 0 },
-      listings: [],
-      page: 1,
-      totalPages: 1,
-      q: "",
-      selectedCount: 0,
-      error: "Failed to load listings",
-    });
-  }
-};
+//     const admin = await User.findById(req.user.userId).select("name avatar_url");
+
+//     res.render("admin/admin-listings", {
+//       admin,
+//       stats,
+//       listings: mappedListings,
+//       page,
+//       totalPages: Math.ceil(totalCount / limit) || 1,
+//       q,
+//       selectedCount: 0,
+//     });
+//   } catch (err) {
+//     console.error("Admin listings error:", err);
+//     res.status(500).render("admin/admin-listings", {
+//       admin: null,
+//       stats: { pending: 0, today: 0, issues: 0, totalApproved: 0 },
+//       listings: [],
+//       page: 1,
+//       totalPages: 1,
+//       q: "",
+//       selectedCount: 0,
+//       error: "Failed to load listings",
+//     });
+//   }
+// };
 
 exports.getReports = async (req, res) => {
   try {
@@ -600,6 +602,92 @@ exports.getListings = async (req, res) => {
       selectedCount: 0,
       currentStatus: "pending",
       error: "Failed to load listings",
+    });
+  }
+};
+
+
+exports.getPayments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page || "1", 10);
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const q = req.query.q || "";
+    const status = req.query.status || "all";
+
+    const filter = {};
+    if (status !== "all") {
+      filter.status = status;
+    }
+
+    if (q) {
+      filter.$or = [
+        { transaction_id: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const [payments, totalCount, totalRevenue] = await Promise.all([
+      Payment.find(filter)
+        .populate("user_id", "name phone email")
+        .populate("listing_id", "name city")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Payment.countDocuments(filter),
+
+      Payment.aggregate([
+        { $match: { status: "success" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } }
+      ]),
+    ]);
+
+    const admin = await User.findById(req.user.userId).select("name avatar_url");
+
+    const mappedPayments = payments.map((p) => ({
+      _id: p._id,
+      transactionId: p.transaction_id,
+      userName: p.user_id?.name || "Unknown",
+      userPhone: p.user_id?.phone || "",
+      listingName: p.listing_id?.name || "-",
+      city: p.listing_id?.city || "",
+      amount: `₹${p.amount}`,
+      method: p.method,
+      gateway: p.gateway || "",
+      status: p.status,
+      paidAtFormatted: new Date(p.createdAt).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    }));
+
+    res.render("admin/admin-payments", {
+      admin,
+      payments: mappedPayments,
+      stats: {
+        totalRevenue: totalRevenue[0]?.total || 0,
+        totalPayments: totalCount,
+      },
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+      q,
+      currentStatus: status,
+    });
+  } catch (err) {
+    console.error("Admin payments error:", err);
+    res.status(500).render("admin/admin-payments", {
+      admin: null,
+      payments: [],
+      stats: { totalRevenue: 0, totalPayments: 0 },
+      page: 1,
+      totalPages: 1,
+      q: "",
+      currentStatus: "all",
+      error: "Failed to load payments",
     });
   }
 };

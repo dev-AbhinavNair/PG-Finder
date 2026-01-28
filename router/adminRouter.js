@@ -65,4 +65,8 @@ router.post("/settings/profile", requireAuth, requireAdmin, adminController.upda
 
 router.get("/settings/stats", requireAuth, requireAdmin, adminController.getSystemStats);
 
+router.get("/payments", requireAuth, requireAdmin, adminController.getPayments);
+
+// router.get("/payments/:paymentId", requireAuth, requireAdmin, adminController.getPaymentDetails);
+
 module.exports = router;
