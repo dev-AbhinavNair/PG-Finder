@@ -1,6 +1,7 @@
 const Pg = require("../models/Pg");
 const Booking = require("../models/Booking");
 const Report = require("../models/Report");
+const Payment = require("../models/Payment");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
@@ -375,10 +376,21 @@ const verifyPayment = async (req, res) => {
             .digest('hex');
 
         if (generated_signature == razorpay_signature) {
+            const booking = await Booking.findById(id).populate('pg_id');
 
             await Booking.findByIdAndUpdate(id, {
                 payment_status: 'completed',
                 booking_status: 'confirmed',
+            });
+
+            await Payment.create({
+                user_id: booking.tenant_id,
+                listing_id: booking.pg_id._id,
+                amount: booking.monthly_rent,
+                method: 'razorpay',
+                status: 'success',
+                transaction_id: razorpay_payment_id,
+                gateway: 'razorpay'
             });
 
             res.json({ success: true });

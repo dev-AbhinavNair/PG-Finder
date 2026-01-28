@@ -66,6 +66,18 @@
         <h4 class="page-title mb-3">Payments Overview</h4>
 
         <div class="row g-3 mb-4">
+          <div class="col-12 col-md-6">
+            <form method="GET" class="d-flex gap-2">
+              <input type="text" name="q" class="form-control" placeholder="Search by transaction ID (e.g., booking_6978c6...)" value="<%= q || '' %>">
+              <select name="status" class="form-select" style="width: auto;">
+                <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>All Status</option>
+                <option value="success" <%= currentStatus === 'success' ? 'selected' : '' %>>Success</option>
+                <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="failed" <%= currentStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+              </select>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+          </div>
           <div class="col-6 col-md-3">
             <div class="stat-card">
               <div class="stat-label">Total Revenue</div>

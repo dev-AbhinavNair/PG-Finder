@@ -28,6 +28,12 @@ app.use(attachUser);
 dotenv.config();
 app.set("view engine", "ejs");
 
+const User = require("./models/User");
+const Pg = require("./models/Pg");
+const Booking = require("./models/Booking");
+const Payment = require("./models/Payment");
+const Report = require("./models/Report");
+
 const { requireAuth, requireAdmin } = require("./middleware/auth");
 
 const authRouter = require("./router/authRouter");
