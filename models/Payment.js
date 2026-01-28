@@ -36,6 +36,23 @@ const paymentSchema = new mongoose.Schema(
     gateway: {
       type: String,
     },
+    platform_fee: {
+      type: Number,
+      default: 0,
+    },
+    owner_amount: {
+      type: Number,
+      required: true,
+    },
+    commission_rate: {
+      type: Number,
+      default: 0.10, // 10% platform commission
+    },
+    payout_status: {
+      type: String,
+      enum: ["pending", "processing", "completed", "failed"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

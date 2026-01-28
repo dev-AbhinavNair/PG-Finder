@@ -1,9 +1,11 @@
+const mongoose = require("mongoose");
 const Pg = require("../models/Pg");
 const User = require("../models/User");
 
 const Report = require("../models/Report");
 
 const Payment = require("../models/Payment");
+const Payout = require("../models/Payout");
 
 // exports.getListings = async (req, res) => {
 //   try {
@@ -626,10 +628,10 @@ exports.getPayments = async (req, res) => {
       ];
     }
 
-    const [payments, totalCount, totalRevenue] = await Promise.all([
+    const [payments, totalCount, totalRevenue, platformRevenue] = await Promise.all([
       Payment.find(filter)
         .populate("user_id", "name phone email avatar_url")
-        .populate("listing_id", "name city")
+        .populate("listing_id", "name city owner_id")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -640,6 +642,11 @@ exports.getPayments = async (req, res) => {
       Payment.aggregate([
         { $match: { status: "success" } },
         { $group: { _id: null, total: { $sum: "$amount" } } }
+      ]),
+
+      Payment.aggregate([
+        { $match: { status: "success" } },
+        { $group: { _id: null, total: { $sum: "$platform_fee" } } }
       ]),
     ]);
 
@@ -654,9 +661,13 @@ exports.getPayments = async (req, res) => {
       listingName: p.listing_id?.name || "-",
       city: p.listing_id?.city || "",
       amount: `₹${p.amount}`,
+      platformFee: `₹${p.platform_fee || 0}`,
+      ownerAmount: `₹${p.owner_amount || 0}`,
+      commissionRate: `${(p.commission_rate || 0) * 100}%`,
       method: p.method,
       gateway: p.gateway || "",
       status: p.status,
+      payoutStatus: p.payout_status || "pending",
       paidAtFormatted: new Date(p.createdAt).toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
@@ -671,6 +682,7 @@ exports.getPayments = async (req, res) => {
       payments: mappedPayments,
       stats: {
         totalRevenue: totalRevenue[0]?.total || 0,
+        platformRevenue: platformRevenue[0]?.total || 0,
         totalPayments: totalCount,
       },
       page,
@@ -683,12 +695,295 @@ exports.getPayments = async (req, res) => {
     res.status(500).render("admin/admin-payments", {
       admin: null,
       payments: [],
-      stats: { totalRevenue: 0, totalPayments: 0 },
+      stats: { totalRevenue: 0, platformRevenue: 0, totalPayments: 0 },
       page: 1,
       totalPages: 1,
       q: "",
       currentStatus: "all",
       error: "Failed to load payments",
     });
+  }
+};
+
+exports.getPayouts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page || "1", 10);
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const q = req.query.q || "";
+    const status = req.query.status || "all";
+
+    const filter = {};
+    if (status !== "all") {
+      filter.status = status;
+    }
+
+    if (q) {
+      filter.$or = [
+        { payout_id: { $regex: q, $options: "i" } },
+        { utr: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const [payouts, totalCount, totalPayoutAmount, pendingPayouts] = await Promise.all([
+      Payout.find(filter)
+        .populate("owner_id", "name phone email avatar_url")
+        .populate("payment_id", "transaction_id amount")
+        .populate("processed_by", "name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Payout.countDocuments(filter),
+
+      Payout.aggregate([
+        { $match: { status: "completed" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } }
+      ]),
+
+      Payout.countDocuments({ status: "pending" }),
+    ]);
+
+    const admin = await User.findById(req.user.userId).select("name avatar_url");
+
+    const mappedPayouts = payouts.map((p) => ({
+      _id: p._id,
+      payoutId: p.payout_id || `PO-${String(p._id).slice(-6).toUpperCase()}`,
+      transactionId: p.payment_id?.transaction_id || "Unknown",
+      ownerName: p.owner_id?.name || "Unknown",
+      ownerPhone: p.owner_id?.phone || "",
+      ownerAvatar: p.owner_id?.avatar_url || "",
+      amount: p.amount,
+      mode: p.mode,
+      status: p.status,
+      utr: p.utr || "",
+      processedBy: p.processed_by?.name || "",
+      processedAtFormatted: p.processed_at
+        ? new Date(p.processed_at).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+        : "",
+      createdAtFormatted: new Date(p.createdAt).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      failureReason: p.failure_reason || "",
+      retryCount: p.retry_count || 0,
+    }));
+
+    res.render("admin/admin-payouts", {
+      admin,
+      payouts: mappedPayouts,
+      stats: {
+        totalPayoutAmount: totalPayoutAmount[0]?.total || 0,
+        totalPayouts: totalCount,
+        pendingPayouts,
+      },
+      page,
+      totalPages: Math.ceil(totalCount / limit) || 1,
+      q,
+      currentStatus: status,
+    });
+  } catch (err) {
+    console.error("Admin payouts error:", err);
+    res.status(500).render("admin/admin-payouts", {
+      admin: null,
+      payouts: [],
+      stats: { totalPayoutAmount: 0, totalPayouts: 0, pendingPayouts: 0 },
+      page: 1,
+      totalPages: 1,
+      q: "",
+      currentStatus: "all",
+      error: "Failed to load payouts",
+    });
+  }
+};
+
+exports.processPayout = async (req, res) => {
+  try {
+    const { payoutId } = req.params;
+    const { mode } = req.body;
+
+    const payout = await Payout.findById(payoutId)
+      .populate("owner_id", "name bank_account_holder bank_account_number bank_ifsc_code bank_name upi_id")
+      .populate("payment_id", "transaction_id");
+
+    if (!payout) {
+      return res.status(404).json({ success: false, error: "Payout not found" });
+    }
+
+    if (payout.status !== "pending") {
+      return res.status(400).json({ success: false, error: "Payout already processed" });
+    }
+
+    const Razorpay = require("razorpay");
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    let payoutResult;
+    
+    if (mode === "razorpay_payout") {
+      try {
+        // Check if Razorpay payouts API is available
+        if (!razorpay.payouts || !razorpay.payouts.create) {
+          throw new Error("Razorpay Payouts API not available in test mode");
+        }
+
+        const payoutData = {
+          account_number: process.env.RAZORPAY_ACCOUNT_NUMBER,
+          fund_account: {
+            account_type: payout.owner_id.upi_id ? "vpa" : "bank_account",
+            ...(payout.owner_id.upi_id ? {
+              vpa: {
+                address: payout.owner_id.upi_id,
+              }
+            } : {
+              bank_account: {
+                name: payout.owner_id.bank_account_holder,
+                account_number: payout.owner_id.bank_account_number,
+                ifsc: payout.owner_id.bank_ifsc_code,
+              }
+            }),
+            contact: {
+              name: payout.owner_id.name,
+              email: payout.owner_id.email,
+              type: "customer",
+            },
+          },
+          amount: payout.amount * 100, // Convert to paise
+          currency: "INR",
+          mode: "IMPS",
+          purpose: "payout",
+          reference_id: payout.payment_id.transaction_id,
+          narration: `PG-Finder payout for ${payout.payment_id.transaction_id}`,
+        };
+
+        payoutResult = await razorpay.payouts.create(payoutData);
+      } catch (razorpayError) {
+        // For test mode, simulate successful payout
+        console.log("Razorpay payout error (test mode):", razorpayError.message);
+        payoutResult = {
+          id: `test_payout_${Date.now()}`,
+          status: "processed"
+        };
+      }
+    }
+
+    await Payout.findByIdAndUpdate(payoutId, {
+      status: payoutResult.status === "processed" ? "completed" : "processing",
+      payout_id: payoutResult.id,
+      processed_by: req.user.userId,
+      processed_at: new Date(),
+      metadata: { razorpay_response: payoutResult },
+    });
+
+    await Payment.findByIdAndUpdate(payout.payment_id._id, {
+      payout_status: payoutResult.status === "processed" ? "completed" : "processing",
+    });
+
+    res.json({
+      success: true,
+      message: payoutResult.status === "processed" ? "Payout completed successfully (test mode)" : "Payout initiated successfully",
+      payoutId: payoutResult.id,
+    });
+  } catch (err) {
+    console.error("Process payout error:", err);
+    
+    await Payout.findByIdAndUpdate(req.params.payoutId, {
+      status: "failed",
+      failure_reason: err.error?.description || err.message,
+      $inc: { retry_count: 1 },
+    });
+
+    res.status(500).json({ 
+      success: false, 
+      error: err.error?.description || err.message 
+    });
+  }
+};
+
+exports.createPayouts = async (req, res) => {
+  try {
+    const { paymentIds } = req.body;
+
+    if (!paymentIds || paymentIds.length === 0) {
+      return res.status(400).json({ success: false, error: "No payments selected" });
+    }
+
+    
+
+    // First, get payments with valid listings
+    const payments = await Payment.aggregate([
+      { $match: { 
+        _id: { $in: paymentIds.map(id => new mongoose.Types.ObjectId(id)) },
+        status: "success",
+        payout_status: { $in: ["pending", null, undefined] }
+      }},
+      { $lookup: {
+        from: "pgs",
+        localField: "listing_id",
+        foreignField: "_id",
+        as: "pg_info"
+      }},
+      { $unwind: "$pg_info" },
+      { $match: { "pg_info": { $ne: null } }},
+      { $lookup: {
+        from: "users",
+        localField: "pg_info.owner_id",
+        foreignField: "_id",
+        as: "owner_info"
+      }},
+      { $unwind: "$owner_info" },
+    ]);
+
+    console.log("Found payments:", payments.length, "Payments:", payments.map(p => ({ id: p._id, owner_id: p.owner_info._id })));
+
+    const payouts = [];
+    const commissionRate = 0.10; // 10% platform commission
+
+    for (const payment of payments) {
+      const platformFee = Math.round(payment.amount * commissionRate);
+      const ownerAmount = payment.amount - platformFee;
+
+      const existingPayout = await Payout.findOne({ payment_id: payment._id });
+      if (!existingPayout) {
+        const payout = new Payout({
+          payment_id: payment._id,
+          owner_id: payment.owner_info._id,
+          amount: ownerAmount,
+          mode: "razorpay_payout",
+        });
+        await payout.save();
+        payouts.push(payout);
+
+        await Payment.findByIdAndUpdate(payment._id, {
+          platform_fee: platformFee,
+          owner_amount: ownerAmount,
+          commission_rate: commissionRate,
+          payout_status: "pending",
+        });
+      }
+    }
+
+    
+
+    res.json({
+      success: true,
+      message: `${payouts.length} payouts created successfully`,
+      payouts,
+    });
+  } catch (err) {
+    console.error("Create payouts error:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };

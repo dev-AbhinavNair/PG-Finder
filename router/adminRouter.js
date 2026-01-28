@@ -67,6 +67,12 @@ router.get("/settings/stats", requireAuth, requireAdmin, adminController.getSyst
 
 router.get("/payments", requireAuth, requireAdmin, adminController.getPayments);
 
+router.get("/payouts", requireAuth, requireAdmin, adminController.getPayouts);
+
+router.post("/payouts/create", requireAuth, requireAdmin, adminController.createPayouts);
+
+router.post("/payouts/:payoutId/process", requireAuth, requireAdmin, adminController.processPayout);
+
 // router.get("/payments/:paymentId", requireAuth, requireAdmin, adminController.getPaymentDetails);
 
 module.exports = router;

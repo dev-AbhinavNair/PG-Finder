@@ -383,6 +383,10 @@ const verifyPayment = async (req, res) => {
                 booking_status: 'confirmed',
             });
 
+            const commissionRate = 0.10; // 10% platform commission
+            const platformFee = Math.round(booking.monthly_rent * commissionRate);
+            const ownerAmount = booking.monthly_rent - platformFee;
+
             await Payment.create({
                 user_id: booking.tenant_id,
                 listing_id: booking.pg_id._id,
@@ -390,7 +394,11 @@ const verifyPayment = async (req, res) => {
                 method: 'razorpay',
                 status: 'success',
                 transaction_id: razorpay_payment_id,
-                gateway: 'razorpay'
+                gateway: 'razorpay',
+                platform_fee: platformFee,
+                owner_amount: ownerAmount,
+                commission_rate: commissionRate,
+                payout_status: 'pending'
             });
 
             res.json({ success: true });
