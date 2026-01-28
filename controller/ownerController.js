@@ -688,6 +688,72 @@ const updatePayoutSettings = async (req, res) => {
   }
 };
 
+const getPayoutHistory = async (req, res) => {
+  try {
+    const owner = await User.findById(req.user.userId);
+    const Payout = require("../models/Payout");
+    const Payment = require("../models/Payment");
+
+    const status = (req.query.status || "").trim();
+    const filter = { owner_id: req.user.userId };
+
+    if (status && ["pending", "processing", "completed", "failed", "cancelled"].includes(status)) {
+      filter.status = status;
+    }
+
+    const payouts = await Payout.find(filter)
+      .populate('payment_id', 'amount transaction_id')
+      .populate('processed_by', 'name')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const payoutsWithDetails = await Promise.all(payouts.map(async (payout) => {
+      const payment = payout.payment_id;
+      return {
+        ...payout,
+        paymentAmount: payment?.amount || 0,
+        transactionId: payment?.transaction_id || 'N/A',
+        pgName: payment?.listing_id?.name || 'Unknown PG',
+        processedByName: payout.processed_by?.name || 'System',
+        formattedDate: new Date(payout.createdAt).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }),
+        formattedProcessedDate: payout.processed_at ? 
+          new Date(payout.processed_at).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) : 'N/A'
+      };
+    }));
+
+    const stats = {
+      totalPayouts: payoutsWithDetails.length,
+      totalAmount: payoutsWithDetails.reduce((sum, p) => sum + p.amount, 0),
+      completedPayouts: payoutsWithDetails.filter(p => p.status === 'completed').length,
+      pendingPayouts: payoutsWithDetails.filter(p => p.status === 'pending').length
+    };
+
+    return res.render("owner/payout-history", {
+      owner,
+      payouts: payoutsWithDetails,
+      stats,
+      status
+    });
+  } catch (err) {
+    console.error("Payout history error:", err);
+    return res.status(500).render("owner/payout-history", {
+      owner: null,
+      payouts: [],
+      stats: { totalPayouts: 0, totalAmount: 0, completedPayouts: 0, pendingPayouts: 0 },
+      status: "",
+      error: "Failed to load payout history"
+    });
+  }
+};
+
 const getSettings = async (req, res) => {
   try {
     const owner = await User.findById(req.user.userId);
@@ -782,6 +848,7 @@ module.exports = {
   checkOutBooking,
   getMessages,
   getPayouts,
+  getPayoutHistory,
   requestPayout,
   getPayoutSettings,
   updatePayoutSettings,

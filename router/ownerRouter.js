@@ -19,6 +19,7 @@ router.get("/bookings", requireAuth, requireOwner, ownerController.getBookings);
 router.get("/messages", requireAuth, requireOwner, ownerController.getMessages);
 
 router.get("/payouts", requireAuth, requireOwner, ownerController.getPayouts);
+router.get("/payouts/history", requireAuth, requireOwner, ownerController.getPayoutHistory);
 router.get("/settings", requireAuth, requireOwner, ownerController.getSettings);
 router.post("/settings", requireAuth, requireOwner, ownerController.upload.single("avatar"), ownerController.updateSettings);
 router.post("/payouts/request", requireAuth, requireOwner, ownerController.requestPayout);

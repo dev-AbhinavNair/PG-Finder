@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="/media/favIcon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindMyPG Owner - Payout History</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+  <style>
+    body {
+      background: #f5f7fb;
+    }
+
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      height: 56px;
+    }
+
+    .brand-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #0ea5a4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .sidebar {
+      background: #f3f4f6;
+      border-right: 1px solid #e5e7eb;
+      min-height: calc(100vh - 56px);
+      padding: 14px 10px;
+    }
+
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #374151;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: .95rem;
+    }
+
+    .side-link:hover {
+      background: #e9eefb;
+    }
+
+    .side-link.active {
+      background: #e9eefb;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .side-ic {
+      width: 18px;
+      height: 18px;
+      opacity: .75;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content-wrap {
+      padding: 18px 18px 28px;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #111827;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      border: 1px solid #f1f5f9;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+
+    .table-wrapper {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      margin-top: 18px;
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        z-index: 1040;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1030;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+      }
+
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar topbar navbar-expand-lg px-3">
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="brand-dot">🏠</div>
+      <span class="fw-semibold" style="color:#0f766e;">FindMyPG Owner</span>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <% if (typeof owner !=="undefined" && owner) { %>
+        <span class="small text-secondary d-none d-md-inline">Hi, <%= owner.name %></span>
+        <% } %>
+
+          <div class="rounded-circle bg-light border" style="width:34px;height:34px; overflow:hidden;">
+            <% if (typeof owner !=="undefined" && owner && owner.avatar_url) { %>
+              <img src="<%= owner.avatar_url %>" alt="avatar" style="width:100%;height:100%;object-fit:cover;">
+              <% } %>
+          </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <aside class="col-12 col-md-3 col-lg-2 sidebar">
+        <a class="side-link" href="/owner">
+          <span class="side-ic">▦</span> My PGs
+        </a>
+        <a class="side-link" href="/owner/pg/new">
+          <span class="side-ic">＋</span> Add New PG
+        </a>
+        <a class="side-link" href="/owner/bookings">
+          <span class="side-ic">🗓</span> Bookings
+        </a>
+        <a class="side-link" href="/owner/messages">
+          <span class="side-ic">💬</span> Messages
+        </a>
+        <a class="side-link active" href="/owner/payouts">
+          <span class="side-ic">₹</span> Payouts
+        </a>
+        <a class="side-link" href="/owner/payouts/history">
+          <span class="side-ic">📋</span> Payout History
+        </a>
+        <a class="side-link" href="/owner/settings">
+          <span class="side-ic"><i class="bi bi-gear"></i></span> Settings
+        </a>
+
+        <form action="/logout" method="POST" class="mt-3 px-2">
+          <button class="btn btn-outline-secondary w-100 btn-sm" type="submit">Logout</button>
+        </form>
+      </aside>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <main class="col-12 col-md-9 col-lg-10 content-wrap">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+          <div class="page-title">Payout History</div>
+
+          <div class="d-flex gap-2">
+            <a href="/owner/payouts" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-arrow-left"></i> Back to Earnings
+            </a>
+            <a href="/owner/payouts/settings" class="btn btn-success btn-sm">
+              <i class="bi bi-gear"></i> Payout Settings
+            </a>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-value"><%= stats.totalPayouts %></div>
+              <div class="stat-label">Total Payouts</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-value">₹<%= (stats.totalAmount).toLocaleString('en-IN') %></div>
+              <div class="stat-label">Total Amount</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-value"><%= stats.completedPayouts %></div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-value"><%= stats.pendingPayouts %></div>
+              <div class="stat-label">Pending</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-2 align-items-center mb-3">
+          <div class="col-12 col-lg-8">
+            <form action="/owner/payouts/history" method="GET" class="d-flex gap-2">
+              <select name="status" class="form-select" style="border-radius: 12px;">
+                <option value="">All Status</option>
+                <option value="pending" <%=status==="pending" ? "selected" : "" %>>Pending</option>
+                <option value="processing" <%=status==="processing" ? "selected" : "" %>>Processing</option>
+                <option value="completed" <%=status==="completed" ? "selected" : "" %>>Completed</option>
+                <option value="failed" <%=status==="failed" ? "selected" : "" %>>Failed</option>
+                <option value="cancelled" <%=status==="cancelled" ? "selected" : "" %>>Cancelled</option>
+              </select>
+
+              <button class="btn btn-outline-secondary" style="border-radius: 12px;" type="submit">Filter</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <% if (payouts.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment ID</th>
+                    <th>Payout ID</th>
+                    <th>Processed By</th>
+                    <th>Processed Date</th>
+                    <th>Mode</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% payouts.forEach(payout => { %>
+                    <tr>
+                      <td><%= payout.formattedDate %></td>
+                      <td><strong>₹<%= payout.amount.toLocaleString('en-IN') %></strong></td>
+                      <td>
+                        <span class="badge-status badge bg-<%= 
+                          payout.status === 'completed' ? 'success' : 
+                          payout.status === 'pending' ? 'warning' : 
+                          payout.status === 'processing' ? 'primary' : 
+                          payout.status === 'failed' ? 'danger' : 'secondary' 
+                        %>">
+                          <%= payout.status.charAt(0).toUpperCase() + payout.status.slice(1) %>
+                        </span>
+                      </td>
+                      <td><%= payout.transactionId %></td>
+                      <td><%= payout.payoutId || 'N/A' %></td>
+                      <td><%= payout.processedByName %></td>
+                      <td><%= payout.formattedProcessedDate %></td>
+                      <td><%= payout.mode.replace(/_/g, ' ').toUpperCase() %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <i class="bi bi-receipt text-muted" style="font-size: 3rem;"></i>
+              <h5 class="text-muted mt-3">No payout history found</h5>
+              <p class="text-muted">Your processed payouts will appear here once the admin processes them.</p>
+            </div>
+          <% } %>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="footer text-center">
+    © <%= new Date().getFullYear() %> FindMyPG Owner. All rights reserved.
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      });
+
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      });
+    }
+  </script>
+</body>
+
+</html>
