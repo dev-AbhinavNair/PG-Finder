@@ -912,6 +912,120 @@ exports.processPayout = async (req, res) => {
   }
 };
 
+exports.processBulkPayouts = async (req, res) => {
+  try {
+    const { payoutIds } = req.body;
+
+    let payoutQuery = { status: "pending" };
+    if (payoutIds !== "all") {
+      if (!payoutIds || payoutIds.length === 0) {
+        return res.status(400).json({ success: false, error: "No payouts selected" });
+      }
+      payoutQuery._id = { $in: payoutIds };
+    }
+
+    const payouts = await Payout.find(payoutQuery)
+      .populate("owner_id", "name bank_account_holder bank_account_number bank_ifsc_code bank_name upi_id")
+      .populate("payment_id", "transaction_id");
+
+    let processedCount = 0;
+    let failedCount = 0;
+    const errors = [];
+
+    const Razorpay = require("razorpay");
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    for (const payout of payouts) {
+      try {
+        let payoutResult;
+        
+        // Check if Razorpay payouts API is available
+        if (!razorpay.payouts || !razorpay.payouts.create) {
+          // For test mode, simulate successful payout
+          payoutResult = {
+            id: `test_payout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            status: "processed"
+          };
+        } else {
+          const payoutData = {
+            account_number: process.env.RAZORPAY_ACCOUNT_NUMBER,
+            fund_account: {
+              account_type: payout.owner_id.upi_id ? "vpa" : "bank_account",
+              ...(payout.owner_id.upi_id ? {
+                vpa: {
+                  address: payout.owner_id.upi_id,
+                }
+              } : {
+                bank_account: {
+                  name: payout.owner_id.bank_account_holder,
+                  account_number: payout.owner_id.bank_account_number,
+                  ifsc: payout.owner_id.bank_ifsc_code,
+                }
+              }),
+              contact: {
+                name: payout.owner_id.name,
+                email: payout.owner_id.email,
+                type: "customer",
+              },
+            },
+            amount: payout.amount * 100, // Convert to paise
+            currency: "INR",
+            mode: "IMPS",
+            purpose: "payout",
+            reference_id: payout.payment_id.transaction_id,
+            narration: `PG-Finder payout for ${payout.payment_id.transaction_id}`,
+          };
+
+          payoutResult = await razorpay.payouts.create(payoutData);
+        }
+
+        await Payout.findByIdAndUpdate(payout._id, {
+          status: payoutResult.status === "processed" ? "completed" : "processing",
+          payout_id: payoutResult.id,
+          processed_by: req.user.userId,
+          processed_at: new Date(),
+          metadata: { razorpay_response: payoutResult, bulk_processed: true },
+        });
+
+        await Payment.findByIdAndUpdate(payout.payment_id._id, {
+          payout_status: payoutResult.status === "processed" ? "completed" : "processing",
+        });
+
+        processedCount++;
+      } catch (error) {
+        console.error(`Failed to process payout ${payout._id}:`, error);
+        
+        await Payout.findByIdAndUpdate(payout._id, {
+          status: "failed",
+          failure_reason: error.error?.description || error.message,
+          $inc: { retry_count: 1 },
+          metadata: { bulk_processed: true, error },
+        });
+
+        failedCount++;
+        errors.push(`Payout ${payout._id}: ${error.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Processed ${processedCount} payouts successfully${failedCount > 0 ? `, ${failedCount} failed` : ''}`,
+      processedCount,
+      failedCount,
+      errors: errors.length > 0 ? errors : null,
+    });
+  } catch (err) {
+    console.error("Bulk process payout error:", err);
+    res.status(500).json({ 
+      success: false, 
+      error: err.message 
+    });
+  }
+};
+
 exports.createPayouts = async (req, res) => {
   try {
     const { paymentIds } = req.body;

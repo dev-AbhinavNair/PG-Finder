@@ -33,6 +33,14 @@
     .user-avatar-placeholder { font-size: 0.75rem; font-weight: 600; }
     .user-cell { padding: 12px 16px; }
     .footer { background: #ffffff; border-top: 1px solid #e5e7eb; padding: 16px 24px; font-size: 0.85rem; color: #9ca3af; }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .content-wrap { padding: 12px 16px 24px; }
+      .page-title { font-size: 1.2rem; }
+      .stat-card { padding: 10px 12px; }
+      .stat-value { font-size: 1.1rem; }
+    }
   </style>
 </head>
 
@@ -73,18 +81,7 @@
         <h4 class="page-title mb-3">Payments Overview</h4>
 
         <div class="row g-3 mb-4">
-          <div class="col-12 col-md-6">
-            <form method="GET" class="d-flex gap-2">
-              <input type="text" name="q" class="form-control" placeholder="Search by transaction ID (e.g., booking_6978c6...)" value="<%= q || '' %>">
-              <select name="status" class="form-select" style="width: auto;">
-                <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>All Status</option>
-                <option value="success" <%= currentStatus === 'success' ? 'selected' : '' %>>Success</option>
-                <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-                <option value="failed" <%= currentStatus === 'failed' ? 'selected' : '' %>>Failed</option>
-              </select>
-              <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-          </div>
+          <!-- Stats Cards Row -->
           <div class="col-12 col-md-3">
             <div class="stat-card">
               <div class="stat-label">Total Revenue</div>
@@ -104,9 +101,28 @@
             </div>
           </div>
           <div class="col-12 col-md-3">
-            <button class="btn btn-primary w-100" onclick="createPayouts()">
-              <i class="bi bi-plus-circle"></i> Create Payouts
-            </button>
+            <div class="stat-card">
+              <div class="stat-label">Actions</div>
+              <button class="btn btn-primary w-100 mt-2" onclick="createPayouts()">
+                <i class="bi bi-plus-circle"></i> Create Payouts
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Bar Row -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <form method="GET" class="d-flex gap-2 align-items-center">
+              <input type="text" name="q" class="form-control" placeholder="Search by transaction ID (e.g., booking_6978c6...)" value="<%= q || '' %>">
+              <select name="status" class="form-select" style="width: auto;">
+                <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>All Status</option>
+                <option value="success" <%= currentStatus === 'success' ? 'selected' : '' %>>Success</option>
+                <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="failed" <%= currentStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+              </select>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </form>
           </div>
         </div>
 

@@ -285,12 +285,14 @@
           </div>
         </div>
 
-        <div class="row g-2 align-items-center mb-3">
+        <form method="GET" class="row g-2 align-items-center mb-3">
           <div class="col-12 col-lg-4">
             <div class="input-group">
               <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
               <input type="text" class="form-control border-start-0" placeholder="Search listings..." name="q"
-                value="<%= q || '' %>" />
+                value="<%= q || '' %>" id="searchInput" />
+              <input type="hidden" name="status" value="<%= currentStatus || 'pending' %>" />
+              <button type="submit" class="btn btn-primary">Search</button>
             </div>
           </div>
           <div class="col-12 col-lg-8 d-flex flex-wrap gap-2 justify-content-lg-end mt-2 mt-lg-0">
@@ -304,6 +306,7 @@
               Date Range
             </button>
           </div>
+        </form>
 
           <% const cs=(currentStatus || "pending" ); %>
 
@@ -322,7 +325,6 @@
                 href="/admin/listings?status=rejected&q=<%= encodeURIComponent(q || '') %>">Rejected</a>
 
             </div>
-        </div>
 
         <div class="table-card">
           <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom small text-muted">
@@ -434,12 +436,10 @@
             <nav>
               <ul class="pagination pagination-sm mb-0">
                 <li class="page-item <%= (page || 1) <= 1 ? 'disabled' : '' %>">
-                  <!DOCTYPE html>
-
-                  <a class="page-link" href="?page=<%= (page || 1) - 1 %>">Previous</a>
+                  <a class="page-link" href="?status=<%= encodeURIComponent(currentStatus || 'pending') %>&q=<%= encodeURIComponent(q || '') %>&page=<%= (page || 1) - 1 %>">Previous</a>
                 </li>
                 <li class="page-item <%= (page || 1) >= (totalPages || 1) ? 'disabled' : '' %>">
-                  <a class="page-link" href="?page=<%= (page || 1) + 1 %>">Next</a>
+                  <a class="page-link" href="?status=<%= encodeURIComponent(currentStatus || 'pending') %>&q=<%= encodeURIComponent(q || '') %>&page=<%= (page || 1) + 1 %>">Next</a>
                 </li>
               </ul>
             </nav>
@@ -554,6 +554,17 @@
           alert("Request failed: " + err.message);
         }
       });
+
+    // Add Enter key support for search
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.closest('form').submit();
+        }
+      });
+    }
 
     const toggleBtn = document.getElementById('sidebarToggle');
     const sidebar = document.querySelector('.sidebar');
