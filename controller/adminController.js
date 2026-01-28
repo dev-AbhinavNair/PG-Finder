@@ -628,7 +628,7 @@ exports.getPayments = async (req, res) => {
 
     const [payments, totalCount, totalRevenue] = await Promise.all([
       Payment.find(filter)
-        .populate("user_id", "name phone email")
+        .populate("user_id", "name phone email avatar_url")
         .populate("listing_id", "name city")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -650,6 +650,7 @@ exports.getPayments = async (req, res) => {
       transactionId: p.transaction_id,
       userName: p.user_id?.name || "Unknown",
       userPhone: p.user_id?.phone || "",
+      userAvatar: p.user_id?.avatar_url || "",
       listingName: p.listing_id?.name || "-",
       city: p.listing_id?.city || "",
       amount: `₹${p.amount}`,

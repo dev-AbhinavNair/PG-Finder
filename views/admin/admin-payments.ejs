@@ -29,6 +29,9 @@
     .badge-status-success { background: #dcfce7; color: #166534; }
     .badge-status-failed { background: #fee2e2; color: #b91c1c; }
     .badge-status-pending { background: #fef3c7; color: #92400e; }
+    .user-avatar-img { object-fit: cover; }
+    .user-avatar-placeholder { font-size: 0.75rem; font-weight: 600; }
+    .user-cell { padding: 12px 16px; }
     .footer { background: #ffffff; border-top: 1px solid #e5e7eb; padding: 16px 24px; font-size: 0.85rem; color: #9ca3af; }
   </style>
 </head>
@@ -116,10 +119,23 @@
                 <% payments.forEach(p => { %>
                   <tr>
                     <td class="fw-semibold"><%= p.transactionId %></td>
-                    <td>
-                      <div class="fw-semibold"><%= p.userName %></div>
-                      <div class="small text-muted"><%= p.userPhone %></div>
-                    </td>
+                      <td class="user-cell">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="rounded-circle bg-light border flex-shrink-0" style="width:40px;height:40px;overflow:hidden">
+                            <% if (p.userAvatar) { %>
+                              <img src="<%= p.userAvatar %>" class="user-avatar-img" style="width:100%;height:100%;object-fit:cover">
+                            <% } else { %>
+                              <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary text-white user-avatar-placeholder">
+                                <%= p.userName ? p.userName.charAt(0).toUpperCase() : 'U' %>
+                              </div>
+                            <% } %>
+                          </div>
+                          <div>
+                            <div class="fw-semibold"><%= p.userName %></div>
+                            <div class="small text-muted"><%= p.userPhone %></div>
+                          </div>
+                        </div>
+                      </td>
                     <td>
                       <div><%= p.listingName %></div>
                       <div class="small text-muted"><%= p.city %></div>
